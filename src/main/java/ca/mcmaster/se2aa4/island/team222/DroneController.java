@@ -45,6 +45,34 @@ public class DroneController {
 
     //Reacts to information returned by the game engine
     public void react(JSONObject response) {
-        
+        //Update battery level
+        int cost = response.getInt("cost");
+        this.batteryLevel -= cost;
+
+        if (previousAction == "echo") {
+
+            //When in front of island scan and return to base
+            int range = response.getJSONObject("extras").getInt("range");
+            if (range == 0) {
+                JSONObject scan = new JSONObject();
+                scan.put("action", "scan");
+                moveQueue.offer(scan);
+                JSONObject stop = new JSONObject();
+                stop.put("action", "stop");
+                moveQueue.offer(stop);
+            }
+
+
+            //Change heading when the island is found
+            String found = response.getJSONObject("extras").getString("found");
+            if (found != "OUT_OF_RANGE") {
+                JSONObject changeHeading = new JSONObject();
+                changeHeading.put("action", "heading");
+                JSONObject parameters = new JSONObject();
+                parameters.put("direction", "S");
+                changeHeading.put("parameters", parameters);
+                moveQueue.offer(changeHeading);
+            }
+        }
     }
 }
