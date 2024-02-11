@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import java.util.Queue;
 import java.util.LinkedList;
@@ -7,10 +9,13 @@ import java.util.LinkedList;
 
 public class DroneController {
     
+    private final Logger logger = LogManager.getLogger();
+
     String currentHeading;
     int batteryLevel;
     Queue<JSONObject> moveQueue;
     String previousAction;
+    Boolean landFound = false;
     
     public DroneController(String initialHeading, int intialBatteryLevel) {
         
@@ -30,11 +35,16 @@ public class DroneController {
             //Take a move from the queue
             currentAction = moveQueue.poll();
         } else {
-            //Otherwise scan then add fly to queue
+            //Otherwise echo, scan and fly
             currentAction.put("action", "echo");
             JSONObject parameters = new JSONObject();
             parameters.put("direction", "S");
             currentAction.put("parameters", parameters);
+
+            JSONObject scan = new JSONObject();
+            scan.put("action", "scan");
+            moveQueue.offer(scan);
+
             JSONObject fly = new JSONObject();
             fly.put("action", "fly");
             moveQueue.offer(fly);
@@ -65,13 +75,17 @@ public class DroneController {
 
             //Change heading when the island is found
             String found = response.getJSONObject("extras").getString("found");
-            if (found != "OUT_OF_RANGE") {
+            if (!found.equals("OUT_OF_RANGE") && !landFound) {
+                JSONObject scan = new JSONObject();
+                scan.put("action", "scan");
+                moveQueue.offer(scan);
                 JSONObject changeHeading = new JSONObject();
                 changeHeading.put("action", "heading");
                 JSONObject parameters = new JSONObject();
                 parameters.put("direction", "S");
                 changeHeading.put("parameters", parameters);
                 moveQueue.offer(changeHeading);
+                landFound = true;
             }
         }
     }
