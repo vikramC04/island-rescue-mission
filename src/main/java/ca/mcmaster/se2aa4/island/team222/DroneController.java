@@ -25,9 +25,22 @@ public class DroneController {
 
     //Decides the next moves for the drone
     public JSONObject decide() {
-        JSONObject decision = new JSONObject();
-        decision.put("action", "stop"); // we stop the exploration immediately
-        return decision;
+        JSONObject currentAction = new JSONObject();
+        if (!moveQueue.isEmpty()) {
+            //Take a move from the queue
+            currentAction = moveQueue.poll();
+        } else {
+            //Otherwise scan then add fly to queue
+            currentAction.put("action", "echo");
+            JSONObject parameters = new JSONObject();
+            parameters.put("direction", "S");
+            currentAction.put("parameters", parameters);
+            JSONObject fly = new JSONObject();
+            fly.put("action", "fly");
+            moveQueue.offer(fly);
+        }
+        this.previousAction = currentAction.getString("action");
+        return currentAction;
     }
 
     //Reacts to information returned by the game engine
