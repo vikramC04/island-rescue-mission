@@ -10,6 +10,8 @@ import java.util.LinkedList;
 
 
 public class DroneController {
+
+    private Drone drone;
     
     private final Logger logger = LogManager.getLogger();
     private String[] direction;
@@ -17,23 +19,21 @@ public class DroneController {
 
     private String scan_dir;
 
-    String currentHeading;
-    int batteryLevel;
     Queue<JSONObject> moveQueue;
     String previousAction;
     Boolean landFound = false;
-    
-    public DroneController(String initialHeading, int intialBatteryLevel) {
-        
-        //Set initial heading and battery level for the drone
-        this.currentHeading = initialHeading;
-        this.batteryLevel = intialBatteryLevel;
 
+
+
+    public DroneController(Drone drone) {
         //Initialize a move queue for the drone
+
+        this.drone = drone;
         this.moveQueue = new LinkedList<>();
         direction = new String[]{"N", "E", "S", "W"};
+        //determine which direction to go at the start
         for(int i=0; i < direction.length; i++) {
-            if(direction[i].equals(initialHeading)) {
+            if(direction[i].equals(drone.getDirection())) {
                 this.dir_index = i;
                 if(dir_index == 0)  {
                     scan_dir = direction[3];
@@ -104,7 +104,8 @@ public class DroneController {
     public void react(JSONObject response) {
         //Update battery level
         int cost = response.getInt("cost");
-        this.batteryLevel -= cost;
+        drone.batteryLevel -= cost;
+        logger.info(drone.batteryLevel);
         logger.info("Previous: " + previousAction);
         String e = "echo";
         if (previousAction.equals(e)) {

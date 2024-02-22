@@ -20,7 +20,8 @@ public class Explorer implements IExplorerRaid {
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
         Integer batteryLevel = info.getInt("budget");
-        controller = new DroneController(direction, batteryLevel);
+        Drone drone = new Drone(direction, batteryLevel);
+        controller = new DroneController(drone);
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
