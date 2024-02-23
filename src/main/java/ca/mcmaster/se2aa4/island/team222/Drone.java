@@ -2,18 +2,34 @@ package ca.mcmaster.se2aa4.island.team222;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.appender.rolling.DirectFileRolloverStrategy;
 
 public class Drone {
 
-    private String currentDirection;
-    public int batteryLevel;
+    private int batteryLevel;
+    private Direction currentDirection;
 
     public Drone(String currentDirection, int batteryLevel){
-        this.currentDirection = currentDirection;
+        
+        switch(currentDirection){
+            case("N"):
+                this.currentDirection = Direction.NORTH;
+                break;
+            case("E"):
+                this.currentDirection = Direction.EAST;
+                break;
+            case("S"):
+                this.currentDirection = Direction.SOUTH;
+                break;
+            case("W"):
+                this.currentDirection = Direction.WEST;
+                break;
+        }
+        
         this.batteryLevel = batteryLevel;
     }
 
-    public String getDirection(){
+    public Direction getDirection(){
         return this.currentDirection;
     }
 
@@ -22,13 +38,11 @@ public class Drone {
     } 
 
     public void updateBatteryLevel(int cost){
-        this.batteryLevel -= cost;
+        this.batteryLevel = this.batteryLevel - cost;
     }
 
-    public void updateDirection(String move){
+    public void updateDirection(Direction move){
         this.currentDirection = move;
     }
-
-
 
 }
