@@ -36,41 +36,6 @@ public class DroneController {
         logger.info("INITIAL DIRECITON INDEX: " + dir_index);
     }
 
-    // move these methods later
-    public String convertToString(Direction d){
-        switch(d){
-            case NORTH:
-                return "N";
-            case EAST:
-                return "E";
-            case SOUTH:
-                return "S";
-            case WEST:
-                return "W";
-            
-            default:
-                throw new IllegalStateException("Unexpected value: " + this);
-
-        }
-    }
-
-    public Direction convertToDirection(String d){
-        switch(d){
-            case "N":
-                return Direction.NORTH;
-            case "E":
-                return Direction.EAST;
-            case "S":
-                return Direction.SOUTH;
-            case "W":
-                return Direction.WEST;
-            
-            default:
-                throw new IllegalStateException("Unexpected value: " + this);
-
-        }
-    }
-
 
 
     //Decides the next moves for the drone
@@ -84,7 +49,7 @@ public class DroneController {
                 logger.info(params);
                 
                 //String scan_dir = params.getString("direction");
-                scan_dir = convertToDirection(params.getString("direction"));
+                scan_dir = Direction.valueOf(params.getString("direction"));
                 logger.info("Echo Direction " + scan_dir);
                // logger.info("Echo direction: " + scan_dir);
             }
@@ -96,7 +61,7 @@ public class DroneController {
                 JSONObject params = currentAction.getJSONObject("parameters");
                 logger.info(params);
                 
-                scan_dir = convertToDirection(params.getString("direction"));
+                scan_dir = Direction.valueOf(params.getString("direction"));
                 logger.info("Echo direction: " + scan_dir);
             }
 
@@ -121,7 +86,7 @@ public class DroneController {
             currentAction.put("action", "echo");
             JSONObject parameters = new JSONObject();
             logger.info(dir_index);
-            parameters.put("direction",convertToString(dir_index));
+            parameters.put("direction",String.valueOf(dir_index));
             currentAction.put("parameters", parameters);
             moveQueue.offer(currentAction);
 
@@ -141,7 +106,7 @@ public class DroneController {
                     dir_index = dir_index.nextRight();
                 }
                 logger.info(dir_index);
-                parameters.put("direction",convertToString(dir_index));
+                parameters.put("direction",String.valueOf(dir_index));
                 currentAction.put("parameters", parameters);
                 moveQueue.offer(currentAction);
             }
@@ -189,7 +154,7 @@ public class DroneController {
                     JSONObject changeHeading = new JSONObject();
                     changeHeading.put("action", "heading");
                     JSONObject parameters = new JSONObject();
-                    parameters.put("direction", convertToString(scan_dir));
+                    parameters.put("direction", String.valueOf(scan_dir));
                     changeHeading.put("parameters", parameters);
                     moveQueue.offer(changeHeading);
                     

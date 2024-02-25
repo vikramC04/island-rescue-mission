@@ -13,16 +13,16 @@ public class Drone {
         
         switch(currentDirection){
             case("N"):
-                this.currentDirection = Direction.NORTH;
+                this.currentDirection = Direction.N;
                 break;
             case("E"):
-                this.currentDirection = Direction.EAST;
+                this.currentDirection = Direction.E;
                 break;
             case("S"):
-                this.currentDirection = Direction.SOUTH;
+                this.currentDirection = Direction.S;
                 break;
             case("W"):
-                this.currentDirection = Direction.WEST;
+                this.currentDirection = Direction.W;
                 break;
         }
         
