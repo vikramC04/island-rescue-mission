@@ -2,23 +2,23 @@ package ca.mcmaster.se2aa4.island.team222;
 
 public enum Direction {
     
-    NORTH, EAST, SOUTH, WEST;
+    N, E, S, W;
 
 
 
     public Direction nextRight() {
         switch (this) {
-            case NORTH -> {
-                return EAST;
+            case N -> {
+                return E;
             }
-            case SOUTH -> {
-                return WEST;
+            case S -> {
+                return W;
             }
-            case WEST -> {
-                return NORTH;
+            case W -> {
+                return N;
             }
-            case EAST -> {
-                return SOUTH;
+            case E -> {
+                return S;
             }
         }
         throw new IllegalStateException("Unexpected value: " + this);
@@ -26,17 +26,17 @@ public enum Direction {
 
     public Direction nextLeft() {
         switch (this) {
-            case NORTH -> {
-                return WEST;
+            case N -> {
+                return W;
             }
-            case SOUTH -> {
-                return EAST;
+            case S -> {
+                return E;
             }
-            case WEST -> {
-                return SOUTH;
+            case W -> {
+                return S;
             }
-            case EAST -> {
-                return NORTH;
+            case E -> {
+                return N;
             }
         }
         throw new IllegalStateException("Unexpected value: " + this);
