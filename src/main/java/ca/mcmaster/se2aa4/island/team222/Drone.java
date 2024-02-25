@@ -6,7 +6,7 @@ import org.apache.logging.log4j.core.appender.rolling.DirectFileRolloverStrategy
 
 public class Drone {
 
-    private int batteryLevel;
+    public int batteryLevel;
     private Direction currentDirection;
 
     public Drone(String currentDirection, int batteryLevel){
