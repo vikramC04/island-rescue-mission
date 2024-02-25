@@ -12,91 +12,83 @@ import java.util.LinkedList;
 public class DroneController {
 
     private Drone drone;
+    private DroneMoveList moveList;
     
     private final Logger logger = LogManager.getLogger();
     private Direction[] direction;
-    private int dir_index;
+    private int dirIndex;
 
-    private Direction scan_dir;
+    private Direction scanDir;
 
-    Queue<JSONObject> moveQueue;
     String previousAction;
     Boolean landFound = false;
 
 
 
     public DroneController(Drone drone) {
-        //Initialize a move queue for the drone
 
         this.drone = drone;
-        this.moveQueue = new LinkedList<>();
-        direction = new Direction[]{Direction.N, Direction.E, Direction.S, Direction.W};
+        this.moveList = new DroneMoveList();
+
         //determine which direction to go at the start
+        direction = new Direction[]{Direction.N, Direction.E, Direction.S, Direction.W};
         for(int i=0; i < direction.length; i++) {
             if(direction[i].equals(drone.getDirection())) {
-                this.dir_index = i;
-                if(dir_index == 0)  {
-                    scan_dir = direction[3];
+                this.dirIndex = i;
+                if(dirIndex == 0)  {
+                    scanDir = direction[3];
                 } else {
-                    scan_dir = direction[dir_index-1]; 
+                    scanDir = direction[dirIndex-1]; 
                 }
                 break;
             }
         }
-        logger.info("INITIAL DIRECITON INDEX: " + String.valueOf(dir_index));
+        logger.info("INITIAL DIRECITON INDEX: " + String.valueOf(dirIndex));
 
     }
 
     //Decides the next moves for the drone
     public JSONObject decide() {
         JSONObject currentAction = new JSONObject();
-        if (!moveQueue.isEmpty()) {
-            //Take a move from the queue
-            currentAction = moveQueue.poll();   
+        if (drone.hasNextMove()) {
+            currentAction = drone.nextMove();
+            
+            //Get direction index
             if(currentAction.getString("action").equals("echo")) {
                 JSONObject params = currentAction.getJSONObject("parameters");
                 logger.info(params);
-
-                scan_dir = Direction.valueOf(params.getString("direction"));
-                logger.info("INITIAL DIRECITON INDEX: " + String.valueOf(dir_index));
+                scanDir = Direction.valueOf(params.getString("direction"));
+                logger.info("INITIAL DIRECITON INDEX: " + String.valueOf(dirIndex));
             }
         } else {
-            //Otherwise echo, scan and fly
+            //Otherwise echo in all directions, scan, and then fly
             echoAll();
-            currentAction = moveQueue.poll();
+
+            //Get direcion index
+            currentAction = drone.nextMove();
             if(currentAction.getString("action").equals("echo")) {
                 JSONObject params = currentAction.getJSONObject("parameters");
                 logger.info(params);
-
-                scan_dir = Direction.valueOf(params.getString("direction"));
-                logger.info("INITIAL DIRECITON INDEX: " + String.valueOf(dir_index));
+                scanDir = Direction.valueOf(params.getString("direction"));
+                logger.info("INITIAL DIRECITON INDEX: " + String.valueOf(dirIndex));
             }
 
-            JSONObject scan = new JSONObject();
-            scan.put("action", "scan");
-            moveQueue.offer(scan);
-
-            JSONObject fly = new JSONObject();
-            fly.put("action", "fly");
-            moveQueue.offer(fly);
+            drone.addMove(moveList.scan());
+            drone.addMove(moveList.fly());
             
         }
+
         this.previousAction = currentAction.getString("action");
         return currentAction;
     }
 
-    public void echoAll() {
-        for(int i=-1; i < 2; i++) {
-            JSONObject currentAction = new JSONObject();
-            currentAction.put("action", "echo");
-            JSONObject parameters = new JSONObject();
-            if(dir_index + i < 0) {
-                parameters.put("direction", String.valueOf(direction[3]));
+    private void echoAll() {
+        for(int i = -1; i < 2; i++) {
+            if(dirIndex + i < 0) {
+                drone.addMove(moveList.echo(direction[3]));
             } else {
-                parameters.put("direction", String.valueOf(direction[(dir_index + i) % 4]));
+                drone.addMove(moveList.echo(direction[(dirIndex + i) % 4]));
             }
-            currentAction.put("parameters", parameters);
-            moveQueue.offer(currentAction);
         }
     }
 
@@ -115,39 +107,29 @@ public class DroneController {
             String found = response.getJSONObject("extras").getString("found");
             if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
                 logger.info("STOPPING");
-                JSONObject scan = new JSONObject();
-                scan.put("action", "scan");
-                moveQueue.offer(scan);
-                JSONObject stop = new JSONObject();
-                stop.put("action", "stop");
-                moveQueue.offer(stop);
+                drone.addMove(moveList.scan());
+                drone.addMove(moveList.stop());
             }
 
 
             //Change heading when the island is found
-            
             if (found.equals("GROUND") && !landFound) {
-                if(!scan_dir.equals(direction[dir_index])) {
-                    logger.info("Found Ground in Direction: " + String.valueOf(scan_dir));
-                    JSONObject scan = new JSONObject();
-                    scan.put("action", "scan");
-                    moveQueue.offer(scan);
-                    JSONObject changeHeading = new JSONObject();
-                    changeHeading.put("action", "heading");
-                    JSONObject parameters = new JSONObject();
-                    parameters.put("direction", String.valueOf(scan_dir));
-                    changeHeading.put("parameters", parameters);
-                    moveQueue.offer(changeHeading);
+                if(!scanDir.equals(direction[dirIndex])) {
+                    logger.info("Found Ground in Direction: " + String.valueOf(scanDir));
+
+                    drone.addMove(moveList.scan());
+                    drone.addMove(moveList.heading(scanDir));
 
                     for(int i=0; i < direction.length; i++) {
-                        if(direction[i].equals(scan_dir)) {
-                            this.dir_index = i;
+                        if(direction[i].equals(scanDir)) {
+                            this.dirIndex = i;
                             break;
                         }
                     }
-                    logger.info("direction is changed to: " + String.valueOf(direction[dir_index]));
 
-                    }
+                    logger.info("direction is changed to: " + String.valueOf(direction[dirIndex]));
+                }
+                
                 logger.info("Land is found");
                 landFound = true;
             }
