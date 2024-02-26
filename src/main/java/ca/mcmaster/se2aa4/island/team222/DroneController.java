@@ -42,14 +42,7 @@ public class DroneController {
          scan_dir = dir_index.nextLeft();
  
          logger.info("INITIAL DIRECITON INDEX: " + dir_index);
-
-
-        dir_index = drone.getDirection();
-        scan_dir = dir_index.nextLeft();
-
-        logger.info("INITIAL DIRECITON INDEX: " + dir_index);
     }
-
 
 
     //Decides the next moves for the drone
@@ -76,7 +69,7 @@ public class DroneController {
             if(!atIsland) {
                 //Otherwise echo, scan and fly
                 echoAll();
-                currentAction = moveQueue.poll();
+                currentAction = drone.nextMove();
                 if(currentAction.getString("action").equals("echo")) {
                     JSONObject params = currentAction.getJSONObject("parameters");
                     logger.info(params);
@@ -85,39 +78,21 @@ public class DroneController {
                     logger.info("Echo direction: " + scan_dir);
                 }
 
-                JSONObject scan = new JSONObject();
-                scan.put("action", "scan");
-                moveQueue.offer(scan);
 
-                JSONObject fly = new JSONObject();
-                fly.put("action", "fly");
-                moveQueue.offer(fly);
+                drone.addMove(moveList.scan());
+                drone.addMove(moveList.fly());
 
             } else {
                 if(orientation.equals("")) {
-                    JSONObject echo = new JSONObject();
-                    echo.put("action", "echo");
-                    JSONObject parameters = new JSONObject();
-                    parameters.put("direction",String.valueOf(dir_index.nextLeft()));
-                    echo.put("parameters", parameters);
-                    moveQueue.offer(echo);
+                    drone.addMove(moveList.echo(dir_index.nextLeft()));
                 } else {
-                    JSONObject echo = new JSONObject();
-                    echo.put("action", "echo");
-                    JSONObject parameters = new JSONObject();
-                    parameters.put("direction",String.valueOf(dir_index));
-                    echo.put("parameters", parameters);
-                    moveQueue.offer(echo);
+                    drone.addMove(moveList.echo(dir_index));
 
-                    JSONObject scan = new JSONObject();
-                    scan.put("action", "scan");
-                    moveQueue.offer(scan);
+                    drone.addMove(moveList.scan());
 
-                    JSONObject fly = new JSONObject();
-                    fly.put("action", "fly");
-                    moveQueue.offer(fly);
+                    drone.addMove(moveList.fly());
                 }
-                currentAction = moveQueue.poll();
+                currentAction = drone.nextMove();
             }
             
             
@@ -162,40 +137,37 @@ public class DroneController {
         logger.info("Previous: " + previousAction);
         String e = "echo";
 
-    if(!atIsland){
-        if (previousAction.equals(e)) {
+        if(!atIsland){
+            if (previousAction.equals(e)) {
 
-            //When in front of island scan and return to base
-            int range = response.getJSONObject("extras").getInt("range");
-            String found = response.getJSONObject("extras").getString("found");
-            logger.info("Found " + found);
-            if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
-                logger.info("STOPPING");
-                drone.clearMoves() // add later
-                drone.addMove(moveList.scan());
-                drone.addMove(moveList.stop());
-                atIsland = true;
-            }
-
-
-            //Change heading when the island is found
-            if (found.equals("GROUND") && !landFound) {
-                if(!scan_dir.equals(dir_index)) {
-                    logger.info("Found Ground in Direction: " + String.valueOf(scan_dir));
-
-                    drone.addMove(moveList.scan());
-                    drone.addMove(moveList.heading(scan_dir));
-
-                    dir_index = scan_dir;
-                    isOnPath = true;
-
-                    logger.info("direction is changed to: " + String.valueOf(dir_index));
+                //When in front of island scan and return to base
+                int range = response.getJSONObject("extras").getInt("range");
+                String found = response.getJSONObject("extras").getString("found");
+                logger.info("Found " + found);
+                if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
+                    drone.clearMoves(); 
+                    atIsland = true;
                 }
-                
 
-                logger.info("Land is found");
-                landFound = true;
-            }
+
+                //Change heading when the island is found
+                if (found.equals("GROUND") && !landFound) {
+                    if(!scan_dir.equals(dir_index)) {
+                        logger.info("Found Ground in Direction: " + String.valueOf(scan_dir));
+
+                        drone.addMove(moveList.scan());
+                        drone.addMove(moveList.heading(scan_dir));
+
+                        dir_index = scan_dir;
+                        isOnPath = true;
+
+                        logger.info("direction is changed to: " + String.valueOf(dir_index));
+                    }
+                    
+
+                    logger.info("Land is found");
+                    landFound = true;
+                }
 
             }
 
@@ -216,41 +188,19 @@ public class DroneController {
                     String found = response.getJSONObject("extras").getString("found");
                     if(previousAction.equals("echo") && found.equals("OUT_OF_RANGE") && rotate == false) {
                         logger.info("Needs to Turn");
-                        moveQueue.clear();
+                        drone.clearMoves();
                         if(orientation.equals("right")) {
                             logger.info("Turning Right");
                             Direction right_dir = dir_index.nextRight();
-                            JSONObject changeHeadingR = new JSONObject();
-                            changeHeadingR.put("action", "heading");
-                            JSONObject parameters = new JSONObject();
-                            parameters.put("direction", String.valueOf(right_dir));
-                            changeHeadingR.put("parameters", parameters);
-                            moveQueue.offer(changeHeadingR);
-            
-                            JSONObject changeHeadingRight = new JSONObject();
-                            changeHeadingRight.put("action", "heading");
-                            JSONObject parametersRight = new JSONObject();
-                            parametersRight.put("direction", String.valueOf(right_dir.nextRight()));
-                            changeHeadingRight.put("parameters", parametersRight);
-                            moveQueue.offer(changeHeadingRight);
+                            drone.addMove(moveList.heading(right_dir));
+                            drone.addMove(moveList.heading(right_dir.nextRight()));
                             orientation = "left";
                             
                         } else if(orientation.equals("left")) {
                             logger.info("Turning Left");
                             Direction left_dir = dir_index.nextLeft();
-                            JSONObject changeHeadingL = new JSONObject();
-                            changeHeadingL.put("action", "heading");
-                            JSONObject parameters = new JSONObject();
-                            parameters.put("direction", String.valueOf(left_dir));
-                            changeHeadingL.put("parameters", parameters);
-                            moveQueue.offer(changeHeadingL);
-            
-                            JSONObject changeHeadingLeft= new JSONObject();
-                            changeHeadingLeft.put("action", "heading");
-                            JSONObject parametersLeft= new JSONObject();
-                            parametersLeft.put("direction", String.valueOf(left_dir.nextLeft()));
-                            changeHeadingLeft.put("parameters", parametersLeft);
-                            moveQueue.offer(changeHeadingLeft);
+                            drone.addMove(moveList.heading(left_dir));
+                            drone.addMove(moveList.heading(left_dir.nextLeft()));
                             orientation = "right";
                         }
                         dir_index = dir_index.nextRight().nextRight();
@@ -259,10 +209,8 @@ public class DroneController {
                         logger.info("Checking for island");
                         if(found.equals("OUT_OF_RANGE")) {
                             logger.info("Complete Stop");
-                            moveQueue.clear();
-                            JSONObject stop = new JSONObject();
-                            stop.put("action", "stop");
-                            moveQueue.offer(stop);
+                            drone.clearMoves();
+                            drone.addMove(moveList.stop());
                         }
                         rotate = false;
                     }
