@@ -46,7 +46,9 @@ public class DroneController {
     public JSONObject decide() {
         JSONObject currentAction = new JSONObject();
         if (!moveQueue.isEmpty()) {
+            
             //Take a move from the queue
+            logger.info("Picking move");
             currentAction = moveQueue.poll();   
             if(currentAction.getString("action").equals("echo")) {
                 JSONObject params = currentAction.getJSONObject("parameters");
@@ -57,6 +59,7 @@ public class DroneController {
                 logger.info("Echo Direction " + scan_dir);
                // logger.info("Echo direction: " + scan_dir);
             } 
+            logger.info("Direction: " + String.valueOf(dir_index));
         } else {
             if(!atIsland) {
                 //Otherwise echo, scan and fly
@@ -170,7 +173,6 @@ public class DroneController {
                     logger.info("STOPPING");
                     moveQueue.clear();
                     // JSONObject stop = new JSONObject();
-                    
                     // stop.put("action", "stop");
                     // moveQueue.offer(stop);
                     logger.info("Direction: " + String.valueOf(dir_index));
@@ -216,54 +218,62 @@ public class DroneController {
                 logger.info("Orientation: " + orientation);
                 
             } else {
-                String found = response.getJSONObject("extras").getString("found");
-                if(previousAction.equals("echo") && found.equals("OUT_OF_RANGE") && rotate == false) {
-                    if(orientation.equals("right")) {
-                        Direction right_dir = dir_index.nextRight();
-                        JSONObject changeHeading = new JSONObject();
-                        changeHeading.put("action", "heading");
-                        JSONObject parameters = new JSONObject();
-                        parameters.put("direction", String.valueOf(right_dir));
-                        changeHeading.put("parameters", parameters);
-                        moveQueue.offer(changeHeading);
-        
-                        JSONObject changeHeadingRight = new JSONObject();
-                        changeHeadingRight.put("action", "heading");
-                        JSONObject parametersRight = new JSONObject();
-                        parametersRight.put("direction", String.valueOf(right_dir.nextRight()));
-                        changeHeadingRight.put("parameters", parametersRight);
-                        moveQueue.offer(changeHeading);
-                        orientation = "left";
-                        
-                    } else if(orientation.equals("left")) {
-                        Direction left_dir = dir_index.nextLeft();
-                        JSONObject changeHeading = new JSONObject();
-                        changeHeading.put("action", "heading");
-                        JSONObject parameters = new JSONObject();
-                        parameters.put("direction", String.valueOf(left_dir));
-                        changeHeading.put("parameters", parameters);
-                        moveQueue.offer(changeHeading);
-        
-                        JSONObject changeHeadingLeft= new JSONObject();
-                        changeHeadingLeft.put("action", "heading");
-                        JSONObject parametersLeft= new JSONObject();
-                        parametersLeft.put("direction", String.valueOf(left_dir.nextLeft()));
-                        changeHeadingLeft.put("parameters", parametersLeft);
-                        moveQueue.offer(changeHeading);
-                        orientation = "right";
+                logger.info("Checking for Turning Requirements");
+                if(previousAction.equals("echo")) {
+                    logger.info("Previous echo");
+                    String found = response.getJSONObject("extras").getString("found");
+                    if(previousAction.equals("echo") && found.equals("OUT_OF_RANGE") && rotate == false) {
+                        logger.info("Needs to Turn");
+                        moveQueue.clear();
+                        if(orientation.equals("right")) {
+                            logger.info("Turning Right");
+                            Direction right_dir = dir_index.nextRight();
+                            JSONObject changeHeadingR = new JSONObject();
+                            changeHeadingR.put("action", "heading");
+                            JSONObject parameters = new JSONObject();
+                            parameters.put("direction", String.valueOf(right_dir));
+                            changeHeadingR.put("parameters", parameters);
+                            moveQueue.offer(changeHeadingR);
+            
+                            JSONObject changeHeadingRight = new JSONObject();
+                            changeHeadingRight.put("action", "heading");
+                            JSONObject parametersRight = new JSONObject();
+                            parametersRight.put("direction", String.valueOf(right_dir.nextRight()));
+                            changeHeadingRight.put("parameters", parametersRight);
+                            moveQueue.offer(changeHeadingRight);
+                            orientation = "left";
+                            
+                        } else if(orientation.equals("left")) {
+                            logger.info("Turning Left");
+                            Direction left_dir = dir_index.nextLeft();
+                            JSONObject changeHeadingL = new JSONObject();
+                            changeHeadingL.put("action", "heading");
+                            JSONObject parameters = new JSONObject();
+                            parameters.put("direction", String.valueOf(left_dir));
+                            changeHeadingL.put("parameters", parameters);
+                            moveQueue.offer(changeHeadingL);
+            
+                            JSONObject changeHeadingLeft= new JSONObject();
+                            changeHeadingLeft.put("action", "heading");
+                            JSONObject parametersLeft= new JSONObject();
+                            parametersLeft.put("direction", String.valueOf(left_dir.nextLeft()));
+                            changeHeadingLeft.put("parameters", parametersLeft);
+                            moveQueue.offer(changeHeadingLeft);
+                            orientation = "right";
+                        }
+                        dir_index = dir_index.nextRight().nextRight();
+                        rotate = true;
+                    }  else if(previousAction.equals("echo") && rotate == true) {
+                        logger.info("Checking for island");
+                        if(found.equals("OUT_OF_RANGE")) {
+                            logger.info("Complete Stop");
+                            moveQueue.clear();
+                            JSONObject stop = new JSONObject();
+                            stop.put("action", "stop");
+                            moveQueue.offer(stop);
+                        }
+                        rotate = false;
                     }
-                    dir_index = dir_index.nextRight().nextRight();
-                    rotate = true;
-                } else if(previousAction.equals("echo") && rotate == true) {
-                    rotate = false;
-                    rotated = true;
-                } else if(previousAction.equals("echo") && rotated == true) {
-                    if(found.equals("OUT_OF_RANGE")) {
-                        JSONObject stop = new JSONObject();
-                        stop.put("action", "stop");
-                        moveQueue.offer(stop);
-                    }
-                    rotated = false;
                 }
             }   
         }
