@@ -23,10 +23,9 @@ public class DroneController {
     Boolean landFound = false;
     Boolean isOnPath = false;
 
-
-
     public DroneController(Drone drone) {
 
+        //Initialize a move queue for the drone
         this.drone = drone;
         this.moveList = new DroneMoveList();
 
@@ -38,7 +37,14 @@ public class DroneController {
  
          logger.info("INITIAL DIRECITON INDEX: " + dir_index);
 
+
+        dir_index = drone.getDirection();
+        scan_dir = dir_index.nextLeft();
+
+        logger.info("INITIAL DIRECITON INDEX: " + dir_index);
     }
+
+
 
     //Decides the next moves for the drone
     public JSONObject decide() {
@@ -102,14 +108,13 @@ public class DroneController {
         dir_index = dir_index.nextLeft();
 
         }
-
     }
 
     //Reacts to information returned by the game engine
     public void react(JSONObject response) {
         //Update battery level
         int cost = response.getInt("cost");
-        drone.updateBatteryLevel(cost);
+        drone.updateBatteryLevel(cost); 
         logger.info(drone.getBattery());
         logger.info("Previous: " + previousAction);
         String e = "echo";
@@ -118,6 +123,7 @@ public class DroneController {
             //When in front of island scan and return to base
             int range = response.getJSONObject("extras").getInt("range");
             String found = response.getJSONObject("extras").getString("found");
+            logger.info("Found " + found);
             if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
                 logger.info("STOPPING");
                 drone.addMove(moveList.scan());
@@ -139,11 +145,12 @@ public class DroneController {
                     logger.info("direction is changed to: " + String.valueOf(dir_index));
                 }
                 
+
                 logger.info("Land is found");
                 landFound = true;
             }
 
         }
+        
     }
 }
-
