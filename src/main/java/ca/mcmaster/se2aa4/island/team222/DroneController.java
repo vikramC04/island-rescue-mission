@@ -42,14 +42,7 @@ public class DroneController {
          scan_dir = dir_index.nextLeft();
  
          logger.info("INITIAL DIRECITON INDEX: " + dir_index);
-
-
-        dir_index = drone.getDirection();
-        scan_dir = dir_index.nextLeft();
-
-        logger.info("INITIAL DIRECITON INDEX: " + dir_index);
     }
-
 
 
     //Decides the next moves for the drone
@@ -144,40 +137,37 @@ public class DroneController {
         logger.info("Previous: " + previousAction);
         String e = "echo";
 
-    if(!atIsland){
-        if (previousAction.equals(e)) {
+        if(!atIsland){
+            if (previousAction.equals(e)) {
 
-            //When in front of island scan and return to base
-            int range = response.getJSONObject("extras").getInt("range");
-            String found = response.getJSONObject("extras").getString("found");
-            logger.info("Found " + found);
-            if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
-                logger.info("STOPPING");
-                drone.clearMoves(); 
-                drone.addMove(moveList.scan());
-                drone.addMove(moveList.stop());
-                atIsland = true;
-            }
-
-
-            //Change heading when the island is found
-            if (found.equals("GROUND") && !landFound) {
-                if(!scan_dir.equals(dir_index)) {
-                    logger.info("Found Ground in Direction: " + String.valueOf(scan_dir));
-
-                    drone.addMove(moveList.scan());
-                    drone.addMove(moveList.heading(scan_dir));
-
-                    dir_index = scan_dir;
-                    isOnPath = true;
-
-                    logger.info("direction is changed to: " + String.valueOf(dir_index));
+                //When in front of island scan and return to base
+                int range = response.getJSONObject("extras").getInt("range");
+                String found = response.getJSONObject("extras").getString("found");
+                logger.info("Found " + found);
+                if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
+                    drone.clearMoves(); 
+                    atIsland = true;
                 }
-                
 
-                logger.info("Land is found");
-                landFound = true;
-            }
+
+                //Change heading when the island is found
+                if (found.equals("GROUND") && !landFound) {
+                    if(!scan_dir.equals(dir_index)) {
+                        logger.info("Found Ground in Direction: " + String.valueOf(scan_dir));
+
+                        drone.addMove(moveList.scan());
+                        drone.addMove(moveList.heading(scan_dir));
+
+                        dir_index = scan_dir;
+                        isOnPath = true;
+
+                        logger.info("direction is changed to: " + String.valueOf(dir_index));
+                    }
+                    
+
+                    logger.info("Land is found");
+                    landFound = true;
+                }
 
             }
 
