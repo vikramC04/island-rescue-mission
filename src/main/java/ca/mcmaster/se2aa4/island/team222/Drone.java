@@ -53,4 +53,8 @@ public class Drone {
         return !moveQueue.isEmpty();
     }
 
+    public void clearMoves(){
+        this.moveQueue.clear();
+    }
+
 }
