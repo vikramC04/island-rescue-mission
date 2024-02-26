@@ -1,0 +1,62 @@
+@startuml Class Diagram
+
+interface IExplorerRaid {
+    initialize(in context, String): void
+    takeDecision(): String
+    acknowledgeResults(in results, String): void
+    deliverFinalReport(): void
+}
+class Runner {
+    main(in args: String[]): void
+}
+
+class Explorer {
+    controller: DroneController
+    initialize(in context: String): void
+    takeDecision(): String
+    acknowledgeResults(in results: String): void
+    deliverFinalReport(): void
+}
+
+class Drone {
+    - batteryLevel: int
+    - currentDirection: Direction
+    + Drone(in currentDirection: Direction, in batteryLevel: int): void
+    + getDirection(): Direction
+    + getBattery(): int
+    + updateBattery(in cost: int): void
+    + updateDirection(in move: Direction): void
+}
+
+class DroneController {
+    - drone: Drone
+    - dirIndex: Direction
+    - scanDir: Direction
+    - moveQueue: Queue<JSONObject>
+    - previousAction: String
+    - landFound: Boolean = false
+    - isOnPath: Boolean = true
+    - echoAll(): void
+    + DroneController(in drone: Drone): void
+    + decide(): JSONObject
+    + react(in response: JSONObject)
+}
+
+enum Direction {
+    N
+    E
+    S
+    W
+    + nextRight(): Direction
+    + nextLeft(): Direction
+}
+
+hide empty members
+
+class Explorer implements IExplorerRaid
+Runner --> Explorer
+Explorer *-- Drone
+Explorer *-- DroneController
+Drone --> Direction
+DroneController --> Direction
+@enduml

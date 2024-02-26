@@ -12,13 +12,14 @@ import java.util.LinkedList;
 public class DroneController {
 
     private Drone drone;
+    private DroneMoveList moveList;
     
     private final Logger logger = LogManager.getLogger();
 
     private Direction dir_index;
     private Direction scan_dir;
 
-    Queue<JSONObject> moveQueue;
+
     private String previousAction;
     private Boolean landFound = false;
     private Boolean isOnPath = false;
@@ -32,7 +33,16 @@ public class DroneController {
 
         //Initialize a move queue for the drone
         this.drone = drone;
-        this.moveQueue = new LinkedList<>();
+        this.moveList = new DroneMoveList();
+
+        //determine which direction to go at the start
+         //Initialize a move queue for the drone
+ 
+         dir_index = drone.getDirection();
+         scan_dir = dir_index.nextLeft();
+ 
+         logger.info("INITIAL DIRECITON INDEX: " + dir_index);
+
 
         dir_index = drone.getDirection();
         scan_dir = dir_index.nextLeft();
@@ -45,11 +55,12 @@ public class DroneController {
     //Decides the next moves for the drone
     public JSONObject decide() {
         JSONObject currentAction = new JSONObject();
-        if (!moveQueue.isEmpty()) {
-            
-            //Take a move from the queue
+
+        if (drone.hasNextMove()) {
             logger.info("Picking move");
-            currentAction = moveQueue.poll();   
+            currentAction = drone.nextMove();
+            
+            //Get direction index
             if(currentAction.getString("action").equals("echo")) {
                 JSONObject params = currentAction.getJSONObject("parameters");
                 logger.info(params);
@@ -57,6 +68,7 @@ public class DroneController {
                 //String scan_dir = params.getString("direction");
                 scan_dir = Direction.valueOf(params.getString("direction"));
                 logger.info("Echo Direction " + scan_dir);
+
                // logger.info("Echo direction: " + scan_dir);
             } 
             logger.info("Direction: " + String.valueOf(dir_index));
@@ -110,48 +122,35 @@ public class DroneController {
             
             
         }
+
         this.previousAction = currentAction.getString("action");
         return currentAction;
     }
 
-    public void echoAll() {
-        // if on path to island only echo infront
+    private void echoAll() {
+
         if(isOnPath){
-
-            JSONObject currentAction = new JSONObject();
-            currentAction.put("action", "echo");
-            JSONObject parameters = new JSONObject();
-            logger.info(dir_index);
-            parameters.put("direction",String.valueOf(dir_index));
-            currentAction.put("parameters", parameters);
-            moveQueue.offer(currentAction);
-
+            drone.addMove(moveList.echo(dir_index));
         }
         else{
-            for(int i = 0; i < 3; i++){
-                JSONObject currentAction = new JSONObject();
-                currentAction.put("action", "echo");
-                JSONObject parameters = new JSONObject();
-                // Echo to the Left 
-                if(i == 1){
-                    dir_index = dir_index.nextLeft();
-                }
-                //Echo to the Right
-                if(i == 2){
-                    dir_index = dir_index.nextRight();
-                    dir_index = dir_index.nextRight();
-                }
-                logger.info(dir_index);
-                parameters.put("direction",String.valueOf(dir_index));
-                currentAction.put("parameters", parameters);
-                moveQueue.offer(currentAction);
+            
+        for(int i = 0; i < 3; i++){
+            // Echo to the Left 
+            if(i == 1){
+                dir_index = dir_index.nextLeft();
             }
-            // Reset to current direction
-            dir_index = dir_index.nextLeft();
+            //Echo to the Right
+            if(i == 2){
+                dir_index = dir_index.nextRight();
+                dir_index = dir_index.nextRight();
+            }
+            logger.info(dir_index);
+            drone.addMove(moveList.echo(dir_index));
+        }
+        // Reset to current direction
+        dir_index = dir_index.nextLeft();
 
         }
-
-        
     }
 
     //Reacts to information returned by the game engine
@@ -162,49 +161,42 @@ public class DroneController {
         logger.info(drone.getBattery());
         logger.info("Previous: " + previousAction);
         String e = "echo";
-        if(!atIsland) {
-            if (previousAction.equals(e)) {
 
-                //When in front of island scan and return to base
-                int range = response.getJSONObject("extras").getInt("range");
-                String found = response.getJSONObject("extras").getString("found");
-                logger.info("Found Island" + found);
-                if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
-                    logger.info("STOPPING");
-                    moveQueue.clear();
-                    // JSONObject stop = new JSONObject();
-                    // stop.put("action", "stop");
-                    // moveQueue.offer(stop);
-                    logger.info("Direction: " + String.valueOf(dir_index));
-                    //logger.info("Direction: " + moveQueue);
-                    atIsland = true;
+    if(!atIsland){
+        if (previousAction.equals(e)) {
+
+            //When in front of island scan and return to base
+            int range = response.getJSONObject("extras").getInt("range");
+            String found = response.getJSONObject("extras").getString("found");
+            logger.info("Found " + found);
+            if (!found.equals("OUT_OF_RANGE") && range == 0 && landFound) {
+                logger.info("STOPPING");
+                drone.clearMoves() // add later
+                drone.addMove(moveList.scan());
+                drone.addMove(moveList.stop());
+                atIsland = true;
+            }
+
+
+            //Change heading when the island is found
+            if (found.equals("GROUND") && !landFound) {
+                if(!scan_dir.equals(dir_index)) {
+                    logger.info("Found Ground in Direction: " + String.valueOf(scan_dir));
+
+                    drone.addMove(moveList.scan());
+                    drone.addMove(moveList.heading(scan_dir));
+
+                    dir_index = scan_dir;
+                    isOnPath = true;
+
+                    logger.info("direction is changed to: " + String.valueOf(dir_index));
                 }
-    
-    
-                //Change heading when the island is found
-    
-                if (found.equals("GROUND") && !landFound) {
-                    if(!scan_dir.equals(dir_index)) {
-                        logger.info("Found Ground in Direction: " + scan_dir);
-                        JSONObject scan = new JSONObject();
-                        scan.put("action", "scan");
-                        moveQueue.offer(scan);
-                        JSONObject changeHeading = new JSONObject();
-                        changeHeading.put("action", "heading");
-                        JSONObject parameters = new JSONObject();
-                        parameters.put("direction", String.valueOf(scan_dir));
-                        changeHeading.put("parameters", parameters);
-                        moveQueue.offer(changeHeading);
-                        
-                        dir_index = scan_dir;
-                        logger.info("direction is changed to: " + dir_index);
-                        isOnPath = true;
-    
-                        }
-                    logger.info("Land is found");
-                    landFound = true;
-                }
-    
+                
+
+                logger.info("Land is found");
+                landFound = true;
+            }
+
             }
 
         } else {
