@@ -49,6 +49,13 @@ public class DroneController {
     public JSONObject decide() {
         JSONObject currentAction = new JSONObject();
 
+        int droneBattery = drone.getBattery();
+            
+        if(droneBattery <= 100){
+            drone.clearMoves();
+            drone.addMove(moveList.stop());
+        }
+
         if (drone.hasNextMove()) {
             logger.info("Picking move");
             currentAction = drone.nextMove();
@@ -133,7 +140,8 @@ public class DroneController {
         //Update battery level
         int cost = response.getInt("cost");
         drone.updateBatteryLevel(cost); 
-        logger.info(drone.getBattery());
+        int droneBattery = drone.getBattery();
+        logger.info(droneBattery);
         logger.info("Previous: " + previousAction);
         String e = "echo";
 
