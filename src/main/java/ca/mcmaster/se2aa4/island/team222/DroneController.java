@@ -191,16 +191,22 @@ public class DroneController {
                         drone.clearMoves();
                         if(orientation.equals("right")) {
                             logger.info("Turning Right");
-                            Direction right_dir = dir_index.nextRight();
-                            drone.addMove(moveList.heading(right_dir));
-                            drone.addMove(moveList.heading(right_dir.nextRight()));
+                            drone.addMove(moveList.scan());
+                            drone.addMove(moveList.heading(dir_index.nextLeft()));
+                            drone.addMove(moveList.heading(dir_index.nextLeft().nextRight()));
+                            drone.addMove(moveList.heading(dir_index.nextLeft().nextRight().nextRight()));
+                            drone.addMove(moveList.fly());
+                            drone.addMove(moveList.heading(dir_index.nextLeft().nextRight().nextRight().nextRight()));
                             orientation = "left";
                             
                         } else if(orientation.equals("left")) {
                             logger.info("Turning Left");
-                            Direction left_dir = dir_index.nextLeft();
-                            drone.addMove(moveList.heading(left_dir));
-                            drone.addMove(moveList.heading(left_dir.nextLeft()));
+                            drone.addMove(moveList.scan());
+                            drone.addMove(moveList.heading(dir_index.nextRight()));
+                            drone.addMove(moveList.heading(dir_index.nextRight().nextLeft()));
+                            drone.addMove(moveList.heading(dir_index.nextRight().nextLeft().nextLeft()));
+                            drone.addMove(moveList.fly());
+                            drone.addMove(moveList.heading(dir_index.nextRight().nextLeft().nextLeft().nextLeft()));
                             orientation = "right";
                         }
                         dir_index = dir_index.nextRight().nextRight();
@@ -211,8 +217,9 @@ public class DroneController {
                             logger.info("Complete Stop");
                             drone.clearMoves();
                             drone.addMove(moveList.stop());
-                        }
-                        rotate = false;
+                            
+                        }   
+                       rotate = false;
                     }
                 }
             }   
