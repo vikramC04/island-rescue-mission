@@ -2,7 +2,8 @@ package ca.mcmaster.se2aa4.island.team222;
 
 import org.json.JSONObject;
 
-public class DroneMoveList {
+public class DroneMoveList{
+
     
     //Fly Action
     public JSONObject fly() {

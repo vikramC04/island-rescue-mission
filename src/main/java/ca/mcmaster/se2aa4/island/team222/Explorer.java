@@ -50,7 +50,12 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        return "No creeks found";
+        if(controller.getClosestCreek().getID() != null){
+            return controller.getClosestCreek().getID();
+        }
+        else
+            return "No creeks found";
+
         
     }
 

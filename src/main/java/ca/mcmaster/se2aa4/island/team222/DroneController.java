@@ -36,7 +36,33 @@ public class DroneController {
     private String orientation = "";
     private Boolean rotate = false;
 
+    public POI getClosestCreek(){
+        return this.closestCreek;
+    }
+    
+    public void findClosestCreek(){
+        if(emergencySite != null){
+            double x = emergencySite.getX();
+            double y = emergencySite.getY();
+            double maxDistance = 100000000; 
+        
+            for(int i = 0; i < creekLocations.size(); i++){
+                double creekX = creekLocations.get(i).getX();
+                double creekY = creekLocations.get(i).getY();
+                
+                double distance = Math.sqrt(Math.pow(Math.abs(x-creekX),2) + Math.pow(Math.abs(y-creekY),2));
+                if(distance < maxDistance){
+                    maxDistance = distance;
+                    closestCreek = creekLocations.get(i);
+                }
+            }
 
+        }
+        
+        
+    }
+
+    
     public DroneController(Drone drone) {
 
         //Initialize a move queue for the drone
@@ -319,7 +345,16 @@ public class DroneController {
                                 logger.info(i + ": " + creekLocations.get(i).getX());
                                 logger.info(i + ": " + creekLocations.get(i).getY());
                             }
-                            
+                            findClosestCreek();
+                            if(closestCreek != null){
+                                logger.info(closestCreek.getID());
+                                logger.info(closestCreek.getX());
+                                logger.info(closestCreek.getY());
+                                logger.info(emergencySite.getID());
+                                logger.info(emergencySite.getX());
+                                logger.info(emergencySite.getY());
+                            }
+
                             logger.info("Complete Stop");
                             drone.clearMoves();
                             drone.addMove(moveList.stop());
