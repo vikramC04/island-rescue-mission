@@ -2,10 +2,14 @@ package ca.mcmaster.se2aa4.island.team222;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import ca.mcmaster.se2aa4.island.team222.POI.POIS;
 
 import java.util.Map;
 import java.util.Queue;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 
@@ -18,6 +22,11 @@ public class DroneController {
 
     private Direction dir_index;
     private Direction scan_dir;
+    private ArrayList<POI> creekLocations = new ArrayList<POI>();
+    private POI emergencySite;
+    private POI closestCreek;
+    private int xPosition = 0;
+    private int yPosition = 0;
 
 
     private String previousAction;
@@ -26,7 +35,6 @@ public class DroneController {
     private Boolean atIsland = false;
     private String orientation = "";
     private Boolean rotate = false;
-    private Boolean rotated = false;
 
 
     public DroneController(Drone drone) {
@@ -87,6 +95,19 @@ public class DroneController {
 
 
                 drone.addMove(moveList.scan());
+                String direction = String.valueOf(dir_index);
+                if(direction == "N"){
+                    yPosition += 1;
+                }
+                else if(direction == "S"){
+                    yPosition -= 1;
+                }
+                else if(direction == "E"){
+                    xPosition += 1;
+                }
+                else if(direction == "W"){
+                    xPosition -=1;
+                }
                 drone.addMove(moveList.fly());
 
             } else {
@@ -96,8 +117,24 @@ public class DroneController {
                     drone.addMove(moveList.echo(dir_index));
 
                     drone.addMove(moveList.scan());
-
+                    
+                    String direction = String.valueOf(dir_index);
+                    if(direction == "N"){
+                        yPosition += 1;
+                    }
+                    else if(direction == "S"){
+                        yPosition -= 1;
+                    }
+                    else if(direction == "E"){
+                        xPosition += 1;
+                    }
+                    else if(direction == "W"){
+                        xPosition -=1;
+                    }
+                    logger.info("xPos" + xPosition);
+                    logger.info("yPos" + yPosition);
                     drone.addMove(moveList.fly());
+
                 }
                 currentAction = drone.nextMove();
             }
@@ -145,6 +182,7 @@ public class DroneController {
         logger.info("Previous: " + previousAction);
         String e = "echo";
 
+
         if(!atIsland){
             if (previousAction.equals(e)) {
 
@@ -180,6 +218,24 @@ public class DroneController {
             }
 
         } else {
+            if(previousAction.equals("scan")) {
+                JSONArray creeks = response.getJSONObject("extras").getJSONArray("creeks");
+                JSONArray sites = response.getJSONObject("extras").getJSONArray("sites");
+                if(creeks.length()> 0){
+                    String creek = creeks.getString(0);
+                    POI newCreek = new POI(xPosition,yPosition,creek,POIS.CREEK);
+                    creekLocations.add(newCreek);
+                    logger.info("ID1: " + creek);
+                }
+
+                if(sites.length()> 0){
+                    String site = sites.getString(0);
+                    emergencySite = new POI(xPosition,yPosition,site,POIS.SITE);
+                    logger.info("ID2: " + site);
+                }
+
+            }
+           
             if(orientation.equals("")) {
                 String found = response.getJSONObject("extras").getString("found");
                 if(found.equals("GROUND")) {
@@ -206,6 +262,24 @@ public class DroneController {
                             drone.addMove(moveList.fly());
                             drone.addMove(moveList.heading(dir_index.nextLeft().nextRight().nextRight().nextRight()));
                             orientation = "left";
+
+                            String direction = String.valueOf(dir_index);
+                            if(direction == "N"){
+                                yPosition += 2;
+                                xPosition += 1;
+                            }
+                            else if(direction == "S"){
+                                yPosition -= 2;
+                                xPosition -=1;
+                            }
+                            else if(direction == "E"){
+                                xPosition += 2;
+                                yPosition -=1;
+                            }
+                            else if(direction == "W"){
+                                xPosition -=2;
+                                yPosition += 1;
+                            }
                             
                         } else if(orientation.equals("left")) {
                             logger.info("Turning Left");
@@ -216,16 +290,40 @@ public class DroneController {
                             drone.addMove(moveList.fly());
                             drone.addMove(moveList.heading(dir_index.nextRight().nextLeft().nextLeft().nextLeft()));
                             orientation = "right";
+                            
+                            String direction = String.valueOf(dir_index);
+                            if(direction == "N"){
+                                yPosition += 2;
+                                xPosition -= 1;
+                            }
+                            else if(direction == "S"){
+                                yPosition -= 2;
+                                xPosition +=1;
+                            }
+                            else if(direction == "E"){
+                                xPosition += 2;
+                                yPosition +=1;
+                            }
+                            else if(direction == "W"){
+                                xPosition -=2;
+                                yPosition -= 1;
+                            }
                         }
                         dir_index = dir_index.nextRight().nextRight();
                         rotate = true;
                     }  else if(previousAction.equals("echo") && rotate == true) {
                         logger.info("Checking for island");
                         if(found.equals("OUT_OF_RANGE")) {
+                            logger.info(creekLocations.size());
+                            for(int i = 0; i < creekLocations.size(); i++){
+                                logger.info(i + ": " + creekLocations.get(i).getX());
+                                logger.info(i + ": " + creekLocations.get(i).getY());
+                            }
+                            
                             logger.info("Complete Stop");
                             drone.clearMoves();
                             drone.addMove(moveList.stop());
-                            
+                           
                         }   
                        rotate = false;
                     }

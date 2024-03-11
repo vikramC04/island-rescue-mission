@@ -14,7 +14,6 @@ public class Explorer implements IExplorerRaid {
     private DroneController controller;
 
 
-
     @Override
     public void initialize(String s) {
         logger.info("** Initializing the Exploration Command Center");
@@ -51,7 +50,8 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        return "no creek found";
+        return "No creeks found";
+        
     }
 
 }
