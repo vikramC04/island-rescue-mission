@@ -2,10 +2,14 @@ package ca.mcmaster.se2aa4.island.team222;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import ca.mcmaster.se2aa4.island.team222.POI.POIS;
 
 import java.util.Map;
 import java.util.Queue;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 
@@ -18,6 +22,11 @@ public class DroneController {
 
     private Direction dir_index;
     private Direction scan_dir;
+    private ArrayList<POI> creekLocations = new ArrayList<POI>();
+    private POI emergencySite;
+    private POI closestCreek;
+    private int xPosition = 0;
+    private int yPosition = 0;
 
 
     private String previousAction;
@@ -26,9 +35,34 @@ public class DroneController {
     private Boolean atIsland = false;
     private String orientation = "";
     private Boolean rotate = false;
-    private Boolean rotated = false;
 
+    public POI getClosestCreek(){
+        return this.closestCreek;
+    }
+    
+    public void findClosestCreek(){
+        if(emergencySite != null){
+            double x = emergencySite.getX();
+            double y = emergencySite.getY();
+            double maxDistance = 100000000; 
+        
+            for(int i = 0; i < creekLocations.size(); i++){
+                double creekX = creekLocations.get(i).getX();
+                double creekY = creekLocations.get(i).getY();
+                
+                double distance = Math.sqrt(Math.pow(Math.abs(x-creekX),2) + Math.pow(Math.abs(y-creekY),2));
+                if(distance < maxDistance){
+                    maxDistance = distance;
+                    closestCreek = creekLocations.get(i);
+                }
+            }
 
+        }
+        
+        
+    }
+
+    
     public DroneController(Drone drone) {
 
         //Initialize a move queue for the drone
@@ -48,6 +82,13 @@ public class DroneController {
     //Decides the next moves for the drone
     public JSONObject decide() {
         JSONObject currentAction = new JSONObject();
+
+        int droneBattery = drone.getBattery();
+            
+        if(droneBattery <= 100){
+            drone.clearMoves();
+            drone.addMove(moveList.stop());
+        }
 
         if (drone.hasNextMove()) {
             logger.info("Picking move");
@@ -80,6 +121,19 @@ public class DroneController {
 
 
                 drone.addMove(moveList.scan());
+                String direction = String.valueOf(dir_index);
+                if(direction == "N"){
+                    yPosition += 1;
+                }
+                else if(direction == "S"){
+                    yPosition -= 1;
+                }
+                else if(direction == "E"){
+                    xPosition += 1;
+                }
+                else if(direction == "W"){
+                    xPosition -=1;
+                }
                 drone.addMove(moveList.fly());
 
             } else {
@@ -89,8 +143,24 @@ public class DroneController {
                     drone.addMove(moveList.echo(dir_index));
 
                     drone.addMove(moveList.scan());
-
+                    
+                    String direction = String.valueOf(dir_index);
+                    if(direction == "N"){
+                        yPosition += 1;
+                    }
+                    else if(direction == "S"){
+                        yPosition -= 1;
+                    }
+                    else if(direction == "E"){
+                        xPosition += 1;
+                    }
+                    else if(direction == "W"){
+                        xPosition -=1;
+                    }
+                    logger.info("xPos" + xPosition);
+                    logger.info("yPos" + yPosition);
                     drone.addMove(moveList.fly());
+
                 }
                 currentAction = drone.nextMove();
             }
@@ -133,9 +203,11 @@ public class DroneController {
         //Update battery level
         int cost = response.getInt("cost");
         drone.updateBatteryLevel(cost); 
-        logger.info(drone.getBattery());
+        int droneBattery = drone.getBattery();
+        logger.info(droneBattery);
         logger.info("Previous: " + previousAction);
         String e = "echo";
+
 
         if(!atIsland){
             if (previousAction.equals(e)) {
@@ -172,6 +244,24 @@ public class DroneController {
             }
 
         } else {
+            if(previousAction.equals("scan")) {
+                JSONArray creeks = response.getJSONObject("extras").getJSONArray("creeks");
+                JSONArray sites = response.getJSONObject("extras").getJSONArray("sites");
+                if(creeks.length()> 0){
+                    String creek = creeks.getString(0);
+                    POI newCreek = new POI(xPosition,yPosition,creek,POIS.CREEK);
+                    creekLocations.add(newCreek);
+                    logger.info("ID1: " + creek);
+                }
+
+                if(sites.length()> 0){
+                    String site = sites.getString(0);
+                    emergencySite = new POI(xPosition,yPosition,site,POIS.SITE);
+                    logger.info("ID2: " + site);
+                }
+
+            }
+           
             if(orientation.equals("")) {
                 String found = response.getJSONObject("extras").getString("found");
                 if(found.equals("GROUND")) {
@@ -191,28 +281,86 @@ public class DroneController {
                         drone.clearMoves();
                         if(orientation.equals("right")) {
                             logger.info("Turning Right");
-                            Direction right_dir = dir_index.nextRight();
-                            drone.addMove(moveList.heading(right_dir));
-                            drone.addMove(moveList.heading(right_dir.nextRight()));
+                            drone.addMove(moveList.scan());
+                            drone.addMove(moveList.heading(dir_index.nextLeft()));
+                            drone.addMove(moveList.heading(dir_index.nextLeft().nextRight()));
+                            drone.addMove(moveList.heading(dir_index.nextLeft().nextRight().nextRight()));
+                            drone.addMove(moveList.fly());
+                            drone.addMove(moveList.heading(dir_index.nextLeft().nextRight().nextRight().nextRight()));
                             orientation = "left";
+
+                            String direction = String.valueOf(dir_index);
+                            if(direction == "N"){
+                                yPosition += 2;
+                                xPosition += 1;
+                            }
+                            else if(direction == "S"){
+                                yPosition -= 2;
+                                xPosition -=1;
+                            }
+                            else if(direction == "E"){
+                                xPosition += 2;
+                                yPosition -=1;
+                            }
+                            else if(direction == "W"){
+                                xPosition -=2;
+                                yPosition += 1;
+                            }
                             
                         } else if(orientation.equals("left")) {
                             logger.info("Turning Left");
-                            Direction left_dir = dir_index.nextLeft();
-                            drone.addMove(moveList.heading(left_dir));
-                            drone.addMove(moveList.heading(left_dir.nextLeft()));
+                            drone.addMove(moveList.scan());
+                            drone.addMove(moveList.heading(dir_index.nextRight()));
+                            drone.addMove(moveList.heading(dir_index.nextRight().nextLeft()));
+                            drone.addMove(moveList.heading(dir_index.nextRight().nextLeft().nextLeft()));
+                            drone.addMove(moveList.fly());
+                            drone.addMove(moveList.heading(dir_index.nextRight().nextLeft().nextLeft().nextLeft()));
                             orientation = "right";
+                            
+                            String direction = String.valueOf(dir_index);
+                            if(direction == "N"){
+                                yPosition += 2;
+                                xPosition -= 1;
+                            }
+                            else if(direction == "S"){
+                                yPosition -= 2;
+                                xPosition +=1;
+                            }
+                            else if(direction == "E"){
+                                xPosition += 2;
+                                yPosition +=1;
+                            }
+                            else if(direction == "W"){
+                                xPosition -=2;
+                                yPosition -= 1;
+                            }
                         }
                         dir_index = dir_index.nextRight().nextRight();
                         rotate = true;
                     }  else if(previousAction.equals("echo") && rotate == true) {
                         logger.info("Checking for island");
                         if(found.equals("OUT_OF_RANGE")) {
+                            logger.info(creekLocations.size());
+                            for(int i = 0; i < creekLocations.size(); i++){
+                                logger.info(i + ": " + creekLocations.get(i).getX());
+                                logger.info(i + ": " + creekLocations.get(i).getY());
+                            }
+                            findClosestCreek();
+                            if(closestCreek != null){
+                                logger.info(closestCreek.getID());
+                                logger.info(closestCreek.getX());
+                                logger.info(closestCreek.getY());
+                                logger.info(emergencySite.getID());
+                                logger.info(emergencySite.getX());
+                                logger.info(emergencySite.getY());
+                            }
+
                             logger.info("Complete Stop");
                             drone.clearMoves();
                             drone.addMove(moveList.stop());
-                        }
-                        rotate = false;
+                           
+                        }   
+                       rotate = false;
                     }
                 }
             }   
