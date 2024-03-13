@@ -226,7 +226,7 @@ public class DroneController {
                 if (found.equals("GROUND") && !landFound) {
                     if(!scan_dir.equals(dir_index)) {
                         logger.info("Found Ground in Direction: " + String.valueOf(scan_dir));
-
+                        drone.clearMoves(); 
                         drone.addMove(moveList.scan());
                         drone.addMove(moveList.heading(scan_dir));
 
@@ -347,10 +347,10 @@ public class DroneController {
                             }
                             findClosestCreek();
                             if(closestCreek != null){
-                                logger.info(closestCreek.getID());
+                                logger.info("Closest creek: " + closestCreek.getID());
                                 logger.info(closestCreek.getX());
                                 logger.info(closestCreek.getY());
-                                logger.info(emergencySite.getID());
+                                logger.info("Emergency Site: " + emergencySite.getID());
                                 logger.info(emergencySite.getX());
                                 logger.info(emergencySite.getY());
                             }
