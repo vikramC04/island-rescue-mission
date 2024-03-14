@@ -30,7 +30,7 @@ public class Action {
         JSONObject obj = new JSONObject();
         JSONObject parameters = new JSONObject();
 
-        switch(actionType) {
+        switch(this.actionType) {
             case FLY:
                 obj.put("action", "fly");
                 break;
