@@ -8,10 +8,12 @@ import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
+
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
-    private DroneController controller;
+    private Controller controller;
 
 
     @Override
@@ -21,16 +23,14 @@ public class Explorer implements IExplorerRaid {
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
         int batteryLevel = info.getInt("budget");
-        Drone drone = new Drone(direction, batteryLevel);
-        controller = new DroneController(drone);
+        controller = new Controller(batteryLevel, CardinalDirection.valueOf(direction));
         logger.info("The drone is facing {}", direction);
-        logger.info(drone.getBattery());
         logger.info("Battery level is {}", batteryLevel);
     }
 
     @Override
     public String takeDecision() {
-        JSONObject decision = controller.decide();
+        JSONObject decision = controller.decide().translate();
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
@@ -50,11 +50,7 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        if(controller.getClosestCreek().getID() != null){
-            return controller.getClosestCreek().getID();
-        }
-        else
-            return "No creeks found";
+        return "No creeks found";
 
         
     }
