@@ -1,17 +1,15 @@
-package ca.mcmaster.se2aa4.island.team222;
+package ca.mcmaster.se2aa4.island.team222.Actions;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+
+import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
 
 public class Action {
 
-    private final Logger logger = LogManager.getLogger();
-
-    ActionType actionType;
-    Map<String, String> parameters = new HashMap<>();
+    private ActionType actionType;
+    private Map<String, String> parameters = new HashMap<>();
 
     //Actions with no Parameters
     public Action(ActionType actionType) {
@@ -19,7 +17,7 @@ public class Action {
     }
 
     //Actions with direction Parameter
-    public Action(ActionType actionType, Direction direction) {
+    public Action(ActionType actionType, CardinalDirection direction) {
         this.actionType = actionType;
         this.parameters.put("direction", String.valueOf(direction));
     }
@@ -56,9 +54,13 @@ public class Action {
                 break;
 
             default:
-                logger.error("JSON translation error.");
+                throw new IllegalStateException("Undefined response type: " + this.actionType);
         }
 
         return obj;
+    }
+
+    public ActionType getActionType() {
+        return this.actionType;
     }
 }
