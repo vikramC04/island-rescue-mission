@@ -1,60 +1,80 @@
 package ca.mcmaster.se2aa4.island.team222;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.appender.rolling.DirectFileRolloverStrategy;
-import org.json.JSONObject;
+import ca.mcmaster.se2aa4.island.team222.Actions.*;
+import ca.mcmaster.se2aa4.island.team222.Directions.*;
 
 public class Drone {
 
-    private int batteryLevel;
-    private Direction currentDirection;
-    private Queue<JSONObject> moveQueue;
+    private int battery;
+    private CardinalDirection direction;
 
-    public Drone(String currentDirection, int batteryLevel){
-        
-        //Set current direction and battery level
-        this.currentDirection = Direction.valueOf(currentDirection);
-        this.batteryLevel = batteryLevel;
-
-        //Initialize a move queue of the drone
-        this.moveQueue = new LinkedList<>();
-
+    public Drone(int battery, CardinalDirection direction) {
+        this.battery = battery;
+        this.direction = direction;
     }
 
-    public Direction getDirection(){
-        return this.currentDirection;
-    }
-
-    public int getBattery(){
-        return this.batteryLevel;
+    public int getBattery() {
+        return this.battery;
     } 
 
-    public void updateBatteryLevel(int cost){
-        this.batteryLevel = this.batteryLevel - cost;
+    public void useBattery(int cost) {
+        this.battery -= cost;
     }
 
-    public void updateDirection(Direction move){
-        this.currentDirection = move;
+    public CardinalDirection getDirection() {
+        return this.direction;
     }
 
-    public JSONObject nextMove() {
-        return moveQueue.poll();
+    public Action fly() {
+        return new Action(ActionType.FLY);
     }
 
-    public void addMove(JSONObject move) {
-        this.moveQueue.offer(move);
+    public Action echo(RelativeDirection direction) {
+        CardinalDirection echoDirection;
+        switch(direction) {
+            case LEFT:
+                echoDirection = this.direction.nextLeft();
+                break;
+            case RIGHT:
+                echoDirection = this.direction.nextRight();
+                break;
+            case FORWARD:
+                echoDirection = this.direction;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + direction);
+        }
+
+        //TODO: Update the drone's positon here
+
+        return new Action(ActionType.ECHO, echoDirection);
     }
 
-    public Boolean hasNextMove() {
-        return !moveQueue.isEmpty();
+    public Action heading(RelativeDirection direction) {
+        CardinalDirection headingDirection;
+        switch(direction) {
+            case LEFT:
+                headingDirection = this.direction.nextLeft();
+                break;
+            case RIGHT:
+                headingDirection = this.direction.nextRight();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + direction);
+        }
+
+        this.direction = headingDirection;
+
+        //TODO: Update the drone's position here
+
+        return new Action(ActionType.HEADING, headingDirection);
     }
 
-    public void clearMoves(){
-        this.moveQueue.clear();
+    public Action scan() {
+        return new Action(ActionType.SCAN);
     }
 
+    public Action stop() {
+        return new Action(ActionType.STOP);
+    }
 }
