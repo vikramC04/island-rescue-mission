@@ -1,36 +1,36 @@
 package ca.mcmaster.se2aa4.island.team222.Phases;
 
 import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
-import ca.mcmaster.se2aa4.island.team222.Directions.RelativeDirection;
+import ca.mcmaster.se2aa4.island.team222.Directions.*;
+import ca.mcmaster.se2aa4.island.team222.Phases.FindCorner.FindCornerState;
+import ca.mcmaster.se2aa4.island.team222.Phases.TravelToIsland.MoveToIsland;
 import ca.mcmaster.se2aa4.island.team222.Responses.Response;
 
-public class TravelToIsland implements Phase {
-    
+public class ScanLine implements Phase {
+
     private final Logger logger = LogManager.getLogger();
 
-    private boolean reachedEnd = false;
-    private MoveToIsland currentState;
+    //Phase Variables
+    private boolean reachedEnd;
+    private ScanLineState currentState;
     private Drone drone;
 
-    public enum MoveToIsland {
-        TURN_TO_ISLAND,
-        SCANNING,
-        ECHOING,
-        FLYING
+    public enum ScanLineState {
+        SCAN,
+        ECHO,
+        FLY,
     }
 
-    public TravelToIsland(Drone drone) {
-        logger.info("Move To Island phase begins.");
+    public ScanLine(Drone drone) {
+        logger.info("FindCorner phase begins.");
         this.reachedEnd = false;
-        this.currentState = MoveToIsland.TURN_TO_ISLAND;
+        this.currentState = ScanLineState.SCAN;
         this.drone = drone;
     }
 
@@ -46,23 +46,20 @@ public class TravelToIsland implements Phase {
         Action nextAction;
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
-            case TURN_TO_ISLAND:
-                nextAction = drone.heading(drone.getEchoDirection());
-                break;
-            case SCANNING:
+            case SCAN:
                 nextAction = drone.scan();
                 break;
-            case ECHOING:
+            case ECHO:
                 nextAction = drone.echo(RelativeDirection.FORWARD);
                 break;
-            case FLYING:
+            case FLY:
                 nextAction = drone.fly();
                 break;
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
         }
         logger.info("Next Action: " + nextAction.getActionType());
-        //Return the action
+
         return nextAction;
     }
 
@@ -78,23 +75,19 @@ public class TravelToIsland implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
-            case TURN_TO_ISLAND:
-                this.currentState = MoveToIsland.SCANNING;
+            case SCAN:
+                this.currentState = ScanLineState.ECHO;
                 break;
-            case SCANNING:
-                this.currentState = MoveToIsland.ECHOING;        //Fly forward
-                break;
-            case ECHOING:
-                String found = data.get("found").getStringValue();
-                int range = data.get("range").getIntValue();  
-                if(found.equals("GROUND") && range == 0) {
+            case ECHO: 
+                String found = data.get("found").getStringValue();                                    
+                if(found.equals("OUT_OF_RANGE")) {
                     this.reachedEnd = true;
                 } else {
-                    this.currentState = MoveToIsland.FLYING;
-                }  
+                    this.currentState = ScanLineState.FLY;
+                }        
                 break;
-            case FLYING:
-                this.currentState = MoveToIsland.SCANNING;        //Fly forward
+            case FLY:
+                this.currentState = ScanLineState.SCAN;
                 break;
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
@@ -104,8 +97,10 @@ public class TravelToIsland implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        logger.info("SCANNING LINE");
-        return new ScanLine(this.drone);
+        if(drone.getOrientation() == Orientation.LEFT) {
+            return new UTurnLeft(this.drone);
+        }
+        return new UTurnRight(this.drone);
     }
 
     @Override

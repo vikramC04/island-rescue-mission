@@ -61,6 +61,7 @@ public class Controller {
                 break;
             case SCAN:
                 response = new ScanResponse(responseObj);
+                break;
             default:
                 throw new IllegalStateException("Undefined response type: " + this.previousAction);
         }
