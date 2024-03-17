@@ -78,6 +78,8 @@ public class UTurnLeft implements Phase {
         //Subtract Battery
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
+        logger.info(drone.getCoordinates().getX());
+        logger.info(drone.getCoordinates().getY());
 
         //Get the data from the response
         Map<String, Value> data = response.getData();

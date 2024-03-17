@@ -74,7 +74,7 @@ public class FindCorner implements Phase {
         //Subtract Battery
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
-
+     
         //Get the data from the response
         Map<String, Value> data = response.getData();
 

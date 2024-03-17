@@ -9,6 +9,7 @@ public class Drone {
     private CardinalDirection direction;
     private Orientation orientation;
     private ScanStatus status;
+    private Coordinate coordinates = new Coordinate(0, 0);
 
     public Drone(int battery, CardinalDirection direction) {
         this.battery = battery;
@@ -47,10 +48,31 @@ public class Drone {
         } else {
             orientation = Orientation.LEFT;
         }
-    } 
+    }
+    
+    public Coordinate getCoordinates(){
+        return this.coordinates;
+    }
 
     public Action fly() {
+        switch(direction) {
+            case N:
+                coordinates.updateY(1);
+                break;
+            case S:
+                coordinates.updateY(-1);
+                break;
+            case E:
+                coordinates.updateX(1);
+                break;
+            case W:
+                coordinates.updateX(-1);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + direction);
+        }
         return new Action(ActionType.FLY);
+
     }
 
     public Action echo(RelativeDirection direction) {
@@ -74,22 +96,49 @@ public class Drone {
         return new Action(ActionType.ECHO, echoDirection);
     }
 
-    public Action heading(RelativeDirection direction) {
-        CardinalDirection headingDirection;
-        switch(direction) {
+    public Action heading(RelativeDirection directionRelative) {
+        CardinalDirection headingDirection = this.direction;
+        // relative direction represents whether you want to turn left or right
+        switch(directionRelative) {
             case LEFT:
+        
+                if(headingDirection.equals(CardinalDirection.N)){
+                    coordinates.updateXandY(-1, 1);
+                }
+                else if(headingDirection.equals(CardinalDirection.S)){
+                    coordinates.updateXandY(1, -1);
+                }
+                else if(headingDirection.equals(CardinalDirection.E)){
+                    coordinates.updateXandY(1, 1);
+                }
+                else if(headingDirection.equals(CardinalDirection.W)){
+                    coordinates.updateXandY(-1, -1);
+                }
                 headingDirection = this.direction.nextLeft();
                 break;
+
             case RIGHT:
+
+                if(headingDirection.equals(CardinalDirection.N)){
+                    coordinates.updateXandY(1, 1);
+                }
+                else if(headingDirection.equals(CardinalDirection.S)){
+                    coordinates.updateXandY(-1, -1);
+                }
+                else if(headingDirection.equals(CardinalDirection.E)){
+                    coordinates.updateXandY(1, -1);
+                }
+                else if(headingDirection.equals(CardinalDirection.W)){
+                    coordinates.updateXandY(-1, 1);
+                }
                 headingDirection = this.direction.nextRight();
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + direction);
         }
 
+        // update the new direction after turning
         this.direction = headingDirection;
-
-        //TODO: Update the drone's position here
 
         return new Action(ActionType.HEADING, headingDirection);
     }
