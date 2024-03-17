@@ -7,28 +7,27 @@ import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
+import ca.mcmaster.se2aa4.island.team222.Actions.Action;
+import ca.mcmaster.se2aa4.island.team222.Actions.ActionType;
 import ca.mcmaster.se2aa4.island.team222.Directions.RelativeDirection;
 import ca.mcmaster.se2aa4.island.team222.Responses.Response;
 
-public class FindIsland implements Phase {
+public class TravelToIsland implements Phase {
     
     private final Logger logger = LogManager.getLogger();
 
     private boolean reachedEnd = false;
-    private FindIslandState currentState;
+    private TravelToIslandState currentState;
     private Drone drone;
 
-    public enum FindIslandState {
-        ECHO_RIGHT,
-        FLY_FORWARD,
-        TURN_RIGHT;
+    public enum TravelToIslandState {
+        TEMP;
     }
 
-    public FindIsland(Drone drone) {
+    public TravelToIsland(Drone drone) {
         logger.info("FindIsland phase begins.");
         this.reachedEnd = false;
-        this.currentState = FindIslandState.ECHO_RIGHT;
+        this.currentState = TravelToIslandState.TEMP;
         this.drone = drone;
     }
 
@@ -44,11 +43,8 @@ public class FindIsland implements Phase {
         Action nextAction;
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
-            case ECHO_RIGHT:
-                nextAction = drone.echo(RelativeDirection.RIGHT);
-                break;
-            case FLY_FORWARD:
-                nextAction = drone.fly();
+            case TEMP:
+                nextAction = drone.scan();
                 break;
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
@@ -70,16 +66,7 @@ public class FindIsland implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
-            case ECHO_RIGHT:
-                String landFound = data.get("found").getStringValue();
-                if(landFound.equals("OUT_OF_RANGE")) {
-                    this.currentState = FindIslandState.FLY_FORWARD;
-                } else {
-                    this.reachedEnd = true;
-                }
-                break;
-            case FLY_FORWARD:
-                this.currentState = FindIslandState.ECHO_RIGHT;
+            case TEMP:
                 break;
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
@@ -99,6 +86,6 @@ public class FindIsland implements Phase {
 
     @Override
     public boolean isFinal() {
-        return false;
+        return true;
     }
 }
