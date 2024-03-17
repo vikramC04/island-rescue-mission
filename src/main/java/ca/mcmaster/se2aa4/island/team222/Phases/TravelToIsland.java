@@ -47,7 +47,7 @@ public class TravelToIsland implements Phase {
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
             case TURN_TO_ISLAND:
-                nextAction = drone.heading(drone.getEchoDirection());
+                nextAction = drone.heading(RelativeDirection.RIGHT);
                 break;
             case SCANNING:
                 nextAction = drone.scan();

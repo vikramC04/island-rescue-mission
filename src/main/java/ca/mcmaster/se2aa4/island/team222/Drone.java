@@ -7,13 +7,14 @@ public class Drone {
 
     private int battery;
     private CardinalDirection direction;
-    private CardinalDirection echoDirection;
     private Orientation orientation;
+    private ScanStatus status;
 
     public Drone(int battery, CardinalDirection direction) {
         this.battery = battery;
         this.direction = direction;
         this.orientation = Orientation.LEFT;
+        this.status = ScanStatus.NONE;
     }
 
     public int getBattery() {
@@ -28,6 +29,14 @@ public class Drone {
         return this.direction;
     }
 
+    public ScanStatus getStatus() {
+        return this.status;
+    } 
+
+    public void setStatus() {
+        this.status = ScanStatus.HALF;
+    }
+    
     public Orientation getOrientation() {
         return this.orientation;
     } 
@@ -59,7 +68,6 @@ public class Drone {
             default:
                 throw new IllegalStateException("Unexpected value: " + direction);
         }
-        this.echoDirection = echoDirection;
 
         //TODO: Update the drone's positon here
 
@@ -84,15 +92,6 @@ public class Drone {
         //TODO: Update the drone's position here
 
         return new Action(ActionType.HEADING, headingDirection);
-    }
-
-    public Action heading(CardinalDirection direction) {
-        this.direction = direction;
-        return new Action(ActionType.HEADING, direction);
-    }
-
-    public CardinalDirection getEchoDirection() {
-        return this.echoDirection;
     }
 
     public Action scan() {

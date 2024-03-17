@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.Drone;
-import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
 import ca.mcmaster.se2aa4.island.team222.Directions.*;
@@ -14,36 +13,37 @@ import ca.mcmaster.se2aa4.island.team222.Phases.ScanLine.ScanLineState;
 import ca.mcmaster.se2aa4.island.team222.Phases.TravelToIsland.MoveToIsland;
 import ca.mcmaster.se2aa4.island.team222.Responses.Response;
 
-public class UTurnRight implements Phase {
+public class ResetLeft implements Phase {
 
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
     private boolean reachedEnd;
-    private UTurn currentState;
+    private Reset currentState;
     private Drone drone;
     private boolean isFinalPhase;
-    private boolean reset;
 
-    public enum UTurn {
-        FLY,
-        RIGHT,
-        SECOND_RIGHT,
-        ECHO,
+    public enum Reset {
+        LEFT,
+        SECOND_LEFT,
+        FORWARD,
+        THIRD_LEFT,
+        SECOND_FORWARD,
+        THIRD_FORWARD,
+        FOURTH_FORWARD,
+        FOURTH_LEFT,
     }
 
-    public UTurnRight(Drone drone) {
-        logger.info("FindCorner phase begins.");
+    public ResetLeft(Drone drone) {
+        logger.info("RESET LEFT BEGINS");
         this.reachedEnd = false;
-        this.currentState = UTurn.FLY;
+        this.currentState = Reset.LEFT;
         this.drone = drone;
         this.isFinalPhase = false;
-        this.reset = false;
     }
 
     @Override
     public Action getNextDecision() {
-
         //Terminate if Drone Battery <= 100
         if(drone.getBattery() <= 100) {
             return new Action(ActionType.STOP);
@@ -53,17 +53,29 @@ public class UTurnRight implements Phase {
         Action nextAction;
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
-            case FLY:
+            case LEFT:
+                nextAction = drone.heading(RelativeDirection.LEFT);
+                break;
+            case SECOND_LEFT:
+                nextAction = drone.heading(RelativeDirection.LEFT);
+                break;
+            case FORWARD:
                 nextAction = drone.fly();
                 break;
-            case RIGHT:
-                nextAction = drone.heading(RelativeDirection.RIGHT);
+            case THIRD_LEFT:
+                nextAction = drone.heading(RelativeDirection.LEFT);
                 break;
-            case SECOND_RIGHT:
-                nextAction = drone.heading(RelativeDirection.RIGHT);
+            case SECOND_FORWARD:
+                nextAction = drone.fly();
                 break;
-            case ECHO:
-                nextAction = drone.echo(RelativeDirection.FORWARD);
+            case THIRD_FORWARD:
+                nextAction = drone.fly();
+                break; 
+            case FOURTH_FORWARD:
+                nextAction = drone.fly();
+                break;       
+            case FOURTH_LEFT:
+                nextAction = drone.heading(RelativeDirection.LEFT);
                 break;
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
@@ -80,29 +92,31 @@ public class UTurnRight implements Phase {
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
 
-        //Get the data from the response
-        Map<String, Value> data = response.getData();
-
         //Updates the current state using the response
         switch(this.currentState) {
-            case FLY:
-                this.currentState = UTurn.RIGHT;
+            case LEFT:
+                this.currentState = Reset.SECOND_LEFT;
                 break;
-            case RIGHT: 
-                this.currentState = UTurn.SECOND_RIGHT;        
+            case SECOND_LEFT: 
+                this.currentState = Reset.FORWARD;        
                 break;
-            case SECOND_RIGHT:
-                this.currentState = UTurn.ECHO; 
+            case FORWARD:
+                this.currentState = Reset.THIRD_LEFT; 
                 break;
-            case ECHO:
-                String found = data.get("found").getStringValue();
-                if(found.equals("OUT_OF_RANGE")) {
-                    if(drone.getStatus() == ScanStatus.NONE) {
-                        this.reset = true;
-                    } else {
-                        this.isFinalPhase = true;
-                    } 
-                }
+            case THIRD_LEFT:
+                this.currentState = Reset.SECOND_FORWARD;
+                break;
+            case SECOND_FORWARD:
+                this.currentState = Reset.THIRD_FORWARD;
+                break;
+            case THIRD_FORWARD:
+                this.currentState = Reset.FOURTH_FORWARD;
+                break;
+            case FOURTH_FORWARD:
+                this.currentState = Reset.FOURTH_LEFT;
+                break;
+            case FOURTH_LEFT:
+                drone.setStatus();
                 drone.switchOrientation();
                 this.reachedEnd = true;
                 break;
@@ -114,14 +128,7 @@ public class UTurnRight implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        if(reset) {
-            if(drone.getOrientation() == Orientation.LEFT) {
-                return new ResetLeft(this.drone);
-            }
-            return new ResetRight(this.drone);
-        } else {
-            return new ScanLine(this.drone);
-        }
+        return new ScanLine(this.drone);
     }
 
     @Override
@@ -131,6 +138,6 @@ public class UTurnRight implements Phase {
 
     @Override
     public boolean isFinal() {
-        return this.isFinalPhase;
+        return false;
     }
 }

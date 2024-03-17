@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.Drone;
+import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
 import ca.mcmaster.se2aa4.island.team222.Directions.*;
@@ -22,6 +23,7 @@ public class UTurnLeft implements Phase {
     private UTurnState currentState;
     private Drone drone;
     private boolean isFinalPhase;
+    private boolean reset;
 
     public enum UTurnState {
         FLY,
@@ -31,11 +33,11 @@ public class UTurnLeft implements Phase {
     }
 
     public UTurnLeft(Drone drone) {
-        logger.info("FindCorner phase begins.");
         this.reachedEnd = false;
         this.currentState = UTurnState.FLY;
         this.drone = drone;
         this.isFinalPhase = false;
+        this.reset = false;
     }
 
     @Override
@@ -94,7 +96,11 @@ public class UTurnLeft implements Phase {
             case ECHO:
                 String found = data.get("found").getStringValue();
                 if(found.equals("OUT_OF_RANGE")) {
-                    isFinalPhase = true;
+                    if(drone.getStatus() == ScanStatus.NONE) {
+                        this.reset = true;
+                    } else {
+                        this.isFinalPhase = true;
+                    } 
                 }
                 drone.switchOrientation();
                 this.reachedEnd = true;
@@ -107,7 +113,14 @@ public class UTurnLeft implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new ScanLine(this.drone);
+        if(reset) {
+            if(drone.getOrientation() == Orientation.LEFT) {
+                return new ResetLeft(this.drone);
+            }
+            return new ResetRight(this.drone);
+        } else {
+            return new ScanLine(this.drone);
+        }
     }
 
     @Override
@@ -120,3 +133,4 @@ public class UTurnLeft implements Phase {
         return this.isFinalPhase;
     }
 }
+

@@ -8,8 +8,6 @@ import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
 import ca.mcmaster.se2aa4.island.team222.Directions.*;
-import ca.mcmaster.se2aa4.island.team222.Phases.FindCorner.FindCornerState;
-import ca.mcmaster.se2aa4.island.team222.Phases.TravelToIsland.MoveToIsland;
 import ca.mcmaster.se2aa4.island.team222.Responses.Response;
 
 public class ScanLine implements Phase {
