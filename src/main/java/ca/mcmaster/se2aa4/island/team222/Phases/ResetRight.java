@@ -19,32 +19,31 @@ public class ResetRight implements Phase {
 
     //Phase Variables
     private boolean reachedEnd;
-    private Reset currentState;
+    private ResetR currentState;
     private Drone drone;
     private boolean isFinalPhase;
 
-    public enum Reset {
+    public enum ResetR {
+        FORWARD,
+        LEFT,
+        SECOND_LEFT,
+        THIRD_LEFT,
         RIGHT,
         SECOND_RIGHT,
-        FORWARD,
-        THIRD_RIGHT,
         SECOND_FORWARD,
-        THIRD_FORWARD,
-        FOURTH_FORWARD,
-        FOURTH_RIGHT,
+        THIRD_RIGHT,
     }
 
     public ResetRight(Drone drone) {
         logger.info("RESET RIGHT BEGINS");
         this.reachedEnd = false;
-        this.currentState = Reset.RIGHT;
+        this.currentState = ResetR.FORWARD;
         this.drone = drone;
         this.isFinalPhase = false;
     }
 
     @Override
     public Action getNextDecision() {
-
         //Terminate if Drone Battery <= 100
         if(drone.getBattery() <= 100) {
             return new Action(ActionType.STOP);
@@ -54,30 +53,30 @@ public class ResetRight implements Phase {
         Action nextAction;
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
+            case FORWARD:
+                nextAction = drone.fly();
+                break;
+            case LEFT:
+                nextAction = drone.heading(RelativeDirection.LEFT);
+                break;
+            case SECOND_LEFT:
+                nextAction = drone.heading(RelativeDirection.LEFT);
+                break;
+            case THIRD_LEFT:
+                nextAction = drone.heading(RelativeDirection.LEFT);
+                break;
             case RIGHT:
                 nextAction = drone.heading(RelativeDirection.RIGHT);
                 break;
             case SECOND_RIGHT:
                 nextAction = drone.heading(RelativeDirection.RIGHT);
-                break;
-            case FORWARD:
-                nextAction = drone.fly();
-                break;
-            case THIRD_RIGHT:
-                nextAction = drone.heading(RelativeDirection.RIGHT);
-                break;
+                break; 
             case SECOND_FORWARD:
                 nextAction = drone.fly();
-                break;
-            case THIRD_FORWARD:
-                nextAction = drone.fly();
-                break; 
-            case FOURTH_FORWARD:
-                nextAction = drone.fly();
-                break;       
-            case FOURTH_RIGHT:
+                break;  
+            case THIRD_RIGHT:
                 nextAction = drone.heading(RelativeDirection.RIGHT);
-                break;
+                break; 
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
         }
@@ -95,28 +94,28 @@ public class ResetRight implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
-            case RIGHT:
-                this.currentState = Reset.SECOND_RIGHT;
-                break;
-            case SECOND_RIGHT: 
-                this.currentState = Reset.FORWARD;        
-                break;
             case FORWARD:
-                this.currentState = Reset.THIRD_RIGHT; 
+                this.currentState = ResetR.LEFT;
                 break;
-            case THIRD_RIGHT:
-                this.currentState = Reset.SECOND_FORWARD;
+            case LEFT: 
+                this.currentState = ResetR.SECOND_LEFT;        
+                break;
+            case SECOND_LEFT:
+                this.currentState = ResetR.THIRD_LEFT; 
+                break;
+            case THIRD_LEFT:
+                this.currentState = ResetR.RIGHT;
+                break;
+            case RIGHT:
+                this.currentState = ResetR.SECOND_RIGHT;
+                break;
+            case SECOND_RIGHT:
+                this.currentState = ResetR.SECOND_FORWARD;
                 break;
             case SECOND_FORWARD:
-                this.currentState = Reset.THIRD_FORWARD;
+                this.currentState = ResetR.THIRD_RIGHT;
                 break;
-            case THIRD_FORWARD:
-                this.currentState = Reset.FOURTH_FORWARD;
-                break;
-            case FOURTH_FORWARD:
-                this.currentState = Reset.FOURTH_RIGHT;
-                break;
-            case FOURTH_RIGHT:
+            case THIRD_RIGHT:  
                 drone.setStatus();
                 drone.switchOrientation();
                 this.reachedEnd = true;
