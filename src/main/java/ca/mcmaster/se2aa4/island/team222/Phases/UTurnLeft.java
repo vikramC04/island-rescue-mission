@@ -26,7 +26,6 @@ public class UTurnLeft implements Phase {
     private boolean reset;
 
     public enum UTurnState {
-        FLY,
         LEFT,
         SECOND_LEFT,
         ECHO,
@@ -34,7 +33,7 @@ public class UTurnLeft implements Phase {
 
     public UTurnLeft(Drone drone) {
         this.reachedEnd = false;
-        this.currentState = UTurnState.FLY;
+        this.currentState = UTurnState.LEFT;
         this.drone = drone;
         this.isFinalPhase = false;
         this.reset = false;
@@ -52,9 +51,6 @@ public class UTurnLeft implements Phase {
         Action nextAction;
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
-            case FLY:
-                nextAction = drone.fly();
-                break;
             case LEFT:
                 nextAction = drone.heading(RelativeDirection.LEFT);
                 break;
@@ -84,9 +80,6 @@ public class UTurnLeft implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
-            case FLY:
-                this.currentState = UTurnState.LEFT;
-                break;
             case LEFT: 
                 this.currentState = UTurnState.SECOND_LEFT;        
                 break;

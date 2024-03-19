@@ -22,11 +22,13 @@ public class ScanLine implements Phase {
     public enum ScanLineState {
         SCAN,
         ECHO,
+        ECHO_NEIGHBOUR,
         FLY,
+        FLY_SINGULAR
     }
 
     public ScanLine(Drone drone) {
-        logger.info("FindCorner phase begins.");
+        logger.info("ScanLine phase begins.");
         this.reachedEnd = false;
         this.currentState = ScanLineState.SCAN;
         this.drone = drone;
@@ -50,7 +52,17 @@ public class ScanLine implements Phase {
             case ECHO:
                 nextAction = drone.echo(RelativeDirection.FORWARD);
                 break;
+            case ECHO_NEIGHBOUR:
+                if(drone.getOrientation() == Orientation.LEFT) {
+                    nextAction = drone.echo(RelativeDirection.LEFT);
+                } else {
+                    nextAction = drone.echo(RelativeDirection.RIGHT);
+                }
+                break;
             case FLY:
+                nextAction = drone.fly();
+                break;
+            case FLY_SINGULAR:
                 nextAction = drone.fly();
                 break;
             default:
@@ -76,16 +88,27 @@ public class ScanLine implements Phase {
             case SCAN:
                 this.currentState = ScanLineState.ECHO;
                 break;
-            case ECHO: 
-                String found = data.get("found").getStringValue();                                    
+            case ECHO:     
+                String found = data.get("found").getStringValue();                             
                 if(found.equals("OUT_OF_RANGE")) {
-                    this.reachedEnd = true;
+                    this.currentState = ScanLineState.ECHO_NEIGHBOUR;  
                 } else {
                     this.currentState = ScanLineState.FLY;
-                }        
+                }   
                 break;
+            case ECHO_NEIGHBOUR: 
+                String found_land= data.get("found").getStringValue();                                 
+                if(found_land.equals("OUT_OF_RANGE")) {
+                    this.reachedEnd = true;
+                } else {
+                    this.currentState = ScanLineState.FLY_SINGULAR;
+                } 
+                break;    
             case FLY:
                 this.currentState = ScanLineState.SCAN;
+                break;
+            case FLY_SINGULAR:
+                this.currentState = ScanLineState.ECHO_NEIGHBOUR;
                 break;
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
