@@ -1,5 +1,6 @@
 package ca.mcmaster.se2aa4.island.team222.Phases;
 
+import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -86,7 +87,13 @@ public class ScanLine implements Phase {
         //Updates the current state using the response
         switch(this.currentState) {
             case SCAN:
-                this.currentState = ScanLineState.ECHO;
+                List<String> biomes = data.get("biomes").getArrayValue();
+                if(!biomes.contains("OCEAN")) {
+                    logger.info("On Ground");
+                    this.currentState = ScanLineState.FLY;
+                } else {
+                    this.currentState = ScanLineState.ECHO;
+                }
                 break;
             case ECHO:     
                 String found = data.get("found").getStringValue();                             
