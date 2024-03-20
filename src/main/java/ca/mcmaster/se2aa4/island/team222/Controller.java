@@ -34,7 +34,8 @@ public class Controller {
                 logger.info("Final phase end.");
                 AllPOIS creekLocations = currentPhase.getCreeks();
                 ClosestCreek findCreek = new ClosestCreek(creekLocations);
-                closestCreek = findCreek.findClosestCreek(); 
+                closestCreek = findCreek.findClosestCreek();
+                previousAction = ActionType.STOP; 
                 return new Action(ActionType.STOP);
             }
 
@@ -73,7 +74,10 @@ public class Controller {
         }
         
         //React to the response
-        currentPhase.react(response);
+        if(this.previousAction != ActionType.STOP) {
+            logger.info("Reacting to response");
+            currentPhase.react(response);
+        }
     }
 
     public String generateReport(){
