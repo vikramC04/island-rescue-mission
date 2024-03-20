@@ -4,6 +4,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
@@ -24,6 +25,8 @@ public class ResetRight implements Phase {
     private Drone drone;
     private boolean isFinalPhase;
     private boolean need_to_scan;
+    private AllPOIS creekSpots;
+
 
     public enum Reset {
         ECHO_LEFT,
@@ -44,13 +47,15 @@ public class ResetRight implements Phase {
         ECHO_RIGHT,
     }
 
-    public ResetRight(Drone drone) {
-        logger.info("RESET LEFT BEGINS");
+
+    public ResetRight(Drone drone, AllPOIS creekSpots) {
+        logger.info("RESET RIGHT BEGINS");
         this.reachedEnd = false;
         this.currentState = Reset.ECHO_LEFT;
         this.drone = drone;
         this.isFinalPhase = false;
         this.need_to_scan = false;
+        this.creekSpots = creekSpots;
     }
 
     @Override
@@ -127,6 +132,9 @@ public class ResetRight implements Phase {
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
         Map<String, Value> data = response.getData();
+        logger.info(drone.getCoordinates().getX());
+        logger.info(drone.getCoordinates().getY());
+
         //Updates the current state using the response
         switch(this.currentState) {
             case ECHO_LEFT:
@@ -205,9 +213,9 @@ public class ResetRight implements Phase {
     public Phase getNextPhase() {
         drone.setStatus();
         if(this.need_to_scan) {
-            return new ScanLine(this.drone);
+            return new ScanLine(this.drone, this.creekSpots);
         } 
-        return new UTurnRight(this.drone);
+        return new UTurnRight(this.drone, this.creekSpots);
     }
 
     @Override
@@ -218,5 +226,10 @@ public class ResetRight implements Phase {
     @Override
     public boolean isFinal() {
         return false;
+    }
+
+    @Override
+    public AllPOIS getCreeks(){
+        return creekSpots;
     }
 }

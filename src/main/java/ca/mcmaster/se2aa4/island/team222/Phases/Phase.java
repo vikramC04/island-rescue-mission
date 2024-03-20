@@ -1,5 +1,6 @@
 package ca.mcmaster.se2aa4.island.team222.Phases;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Actions.Action;
 import ca.mcmaster.se2aa4.island.team222.Responses.Response;
 
@@ -9,4 +10,5 @@ public interface Phase {
     void react(Response response);
     boolean reachedEnd();
     boolean isFinal();
+    AllPOIS getCreeks();
 }

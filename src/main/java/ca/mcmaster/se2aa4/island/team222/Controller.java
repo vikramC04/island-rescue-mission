@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
+import java.util.ArrayList;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -15,9 +17,10 @@ public class Controller {
     
     private Phase currentPhase;
     private ActionType previousAction;
+    private POI closestCreek;
     
     public Controller(int batteryLevel, CardinalDirection direction) {
-        this.currentPhase = new FindCorner(new Drone(batteryLevel, direction));
+        this.currentPhase = new FindCorner(new Drone(batteryLevel, direction), new AllPOIS(new ArrayList<>()));
     }
 
     public Action decide() {
@@ -29,6 +32,9 @@ public class Controller {
             //Terminate if the Drone reaches the end of the final phase
             if(currentPhase.isFinal()) {
                 logger.info("Final phase end.");
+                AllPOIS creekLocations = currentPhase.getCreeks();
+                ClosestCreek findCreek = new ClosestCreek(creekLocations);
+                closestCreek = findCreek.findClosestCreek(); 
                 return new Action(ActionType.STOP);
             }
 
@@ -68,6 +74,11 @@ public class Controller {
         
         //React to the response
         currentPhase.react(response);
+    }
+
+    public String generateReport(){
+        return closestCreek.getID();
+
     }
 
 }

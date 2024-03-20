@@ -1,11 +1,15 @@
 package ca.mcmaster.se2aa4.island.team222.Phases;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
+import ca.mcmaster.se2aa4.island.team222.POI;
+import ca.mcmaster.se2aa4.island.team222.POIType;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
 import ca.mcmaster.se2aa4.island.team222.Directions.*;
@@ -19,6 +23,7 @@ public class ScanLine implements Phase {
     private boolean reachedEnd;
     private ScanLineState currentState;
     private Drone drone;
+    private AllPOIS creekSpots;
 
     public enum ScanLineState {
         SCAN,
@@ -28,11 +33,13 @@ public class ScanLine implements Phase {
         FLY_SINGULAR
     }
 
-    public ScanLine(Drone drone) {
+
+    public ScanLine(Drone drone, AllPOIS creeks) {
         logger.info("ScanLine phase begins.");
         this.reachedEnd = false;
         this.currentState = ScanLineState.SCAN;
         this.drone = drone;
+        this.creekSpots = creeks;
     }
 
     @Override
@@ -80,9 +87,15 @@ public class ScanLine implements Phase {
         //Subtract Battery
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
+        logger.info(drone.getCoordinates().getX());
+        logger.info(drone.getCoordinates().getY());
+
 
         //Get the data from the response
         Map<String, Value> data = response.getData();
+        //logger.info(data.get("creeks").getStringValue());S
+        
+      
 
         //Updates the current state using the response
         switch(this.currentState) {
@@ -94,6 +107,28 @@ public class ScanLine implements Phase {
                 } else {
                     this.currentState = ScanLineState.ECHO;
                 }
+            
+                List<String> creeks = data.get("creeks").getArrayValue();
+                List<String> sites = data.get("sites").getArrayValue();
+                if(creeks.size() > 0){
+                    POI newCreek = new POI(drone.getCoordinates(), creeks.get(0), POIType.CREEK);
+                    creekSpots.addPoi(newCreek, POIType.CREEK);
+                }
+
+                if(sites.size() > 0){
+                    POI emergencySite = new POI(drone.getCoordinates(), sites.get(0), POIType.SITE);
+                    creekSpots.addPoi(emergencySite, POIType.SITE);
+                }
+
+                logger.info(creekSpots.getCreeks());
+                for(int i = 0; i < creekSpots.getCreeks().size(); i++){
+                    logger.info(i + " " + creekSpots.getCreeks().get(i).getID());
+                    logger.info(i + " " + creekSpots.getCreeks().get(i).getX());
+                    logger.info(i + " " + creekSpots.getCreeks().get(i).getY());
+
+                }
+                
+
                 break;
             case ECHO:     
                 String found = data.get("found").getStringValue();                             
@@ -126,9 +161,9 @@ public class ScanLine implements Phase {
     @Override
     public Phase getNextPhase() {
         if(drone.getOrientation() == Orientation.LEFT) {
-            return new UTurnLeft(this.drone);
+            return new UTurnLeft(this.drone, this.creekSpots);
         }
-        return new UTurnRight(this.drone);
+        return new UTurnRight(this.drone, this.creekSpots);
     }
 
     @Override
@@ -139,5 +174,10 @@ public class ScanLine implements Phase {
     @Override
     public boolean isFinal() {
         return false;
+    }
+
+    @Override
+    public AllPOIS getCreeks(){
+        return creekSpots;
     }
 }

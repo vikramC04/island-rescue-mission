@@ -4,6 +4,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
+import ca.mcmaster.se2aa4.island.team222.ClosestCreek;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
@@ -24,6 +26,7 @@ public class UTurnRight implements Phase {
     private Drone drone;
     private boolean isFinalPhase;
     private boolean reset;
+    private AllPOIS creekSpots;
 
     public enum UTurn {
         RIGHT,
@@ -31,13 +34,14 @@ public class UTurnRight implements Phase {
         ECHO,
     }
 
-    public UTurnRight(Drone drone) {
-        logger.info("FindCorner phase begins.");
+    public UTurnRight(Drone drone, AllPOIS creekSpots) {
+        logger.info("Find corner phase begins.");
         this.reachedEnd = false;
         this.currentState = UTurn.RIGHT;
         this.drone = drone;
         this.isFinalPhase = false;
         this.reset = false;
+        this.creekSpots = creekSpots;
     }
 
     @Override
@@ -75,6 +79,9 @@ public class UTurnRight implements Phase {
         //Subtract Battery
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
+        logger.info(drone.getCoordinates().getX());
+        logger.info(drone.getCoordinates().getY());
+
 
         //Get the data from the response
         Map<String, Value> data = response.getData();
@@ -94,6 +101,21 @@ public class UTurnRight implements Phase {
                         this.reset = true;
                     } else {
                         this.isFinalPhase = true;
+                        logger.info("Emergency Site: " + creekSpots.getEmergencySite().getID());
+                        logger.info(creekSpots.getEmergencySite().getX());
+                        logger.info(creekSpots.getEmergencySite().getY());
+                        logger.info("Number of creeks: " + creekSpots.getCreeks().size());
+                        for(int i = 0; i < creekSpots.getCreeks().size(); i++){
+                            logger.info(i + " " + creekSpots.getCreeks().get(i).getID());
+                            logger.info(i + " " + creekSpots.getCreeks().get(i).getX());
+                            logger.info(i + " " + creekSpots.getCreeks().get(i).getY());
+
+                        }
+                        ClosestCreek closestCreek = new ClosestCreek(creekSpots);
+                        logger.info("Closest Creek: " + closestCreek.findClosestCreek().getID());
+                        logger.info(closestCreek.findClosestCreek().getX());
+                        logger.info(closestCreek.findClosestCreek().getY());
+                        
                     } 
                 }
                 drone.switchOrientation();
@@ -109,11 +131,11 @@ public class UTurnRight implements Phase {
     public Phase getNextPhase() {
         if(reset) {
             if(drone.getOrientation() == Orientation.LEFT) {
-                return new ResetLeft(this.drone);
+                return new ResetLeft(this.drone, this.creekSpots);
             }
-            return new ResetRight(this.drone);
+            return new ResetRight(this.drone, this.creekSpots);
         } else {
-            return new ScanLine(this.drone);
+            return new ScanLine(this.drone, this.creekSpots);
         }
     }
 
@@ -125,5 +147,10 @@ public class UTurnRight implements Phase {
     @Override
     public boolean isFinal() {
         return this.isFinalPhase;
+    }
+
+    @Override
+    public AllPOIS getCreeks(){
+        return creekSpots;
     }
 }

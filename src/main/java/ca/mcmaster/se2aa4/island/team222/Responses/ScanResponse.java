@@ -20,6 +20,7 @@ public class ScanResponse implements Response{
     private List<String> biomes;
     private List<String> creeks;
     private List<String> sites;
+    //private List<POI> creekLocations;
     
     public ScanResponse(JSONObject response) {
         this.cost = response.getInt("cost");
@@ -51,8 +52,8 @@ public class ScanResponse implements Response{
         //Load the data into an hash map
         data = new HashMap<String, Value>();
         data.put("biomes", new Value(biomes));
-        data.put("creeks", new Value(creeks));
         data.put("sites", new Value(sites));
+        data.put("creeks", new Value(creeks));
     }
 
     @Override
@@ -74,4 +75,5 @@ public class ScanResponse implements Response{
     public Map<String, Value> getData() {
         return this.data;
     }
+
 }
