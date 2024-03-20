@@ -29,7 +29,6 @@ public class UTurnRight implements Phase {
     private AllPOIS creekSpots;
 
     public enum UTurn {
-        FLY,
         RIGHT,
         SECOND_RIGHT,
         ECHO,
@@ -38,7 +37,7 @@ public class UTurnRight implements Phase {
     public UTurnRight(Drone drone, AllPOIS creekSpots) {
         logger.info("Find corner phase begins.");
         this.reachedEnd = false;
-        this.currentState = UTurn.FLY;
+        this.currentState = UTurn.RIGHT;
         this.drone = drone;
         this.isFinalPhase = false;
         this.reset = false;
@@ -57,9 +56,6 @@ public class UTurnRight implements Phase {
         Action nextAction;
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
-            case FLY:
-                nextAction = drone.fly();
-                break;
             case RIGHT:
                 nextAction = drone.heading(RelativeDirection.RIGHT);
                 break;
@@ -92,9 +88,6 @@ public class UTurnRight implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
-            case FLY:
-                this.currentState = UTurn.RIGHT;
-                break;
             case RIGHT: 
                 this.currentState = UTurn.SECOND_RIGHT;        
                 break;
