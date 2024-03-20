@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
@@ -19,6 +20,7 @@ public class TravelToIsland implements Phase {
     private boolean reachedEnd = false;
     private MoveToIsland currentState;
     private Drone drone;
+    private AllPOIS creekSpots;
 
     public enum MoveToIsland {
         TURN_TO_ISLAND,
@@ -27,11 +29,12 @@ public class TravelToIsland implements Phase {
         FLYING
     }
 
-    public TravelToIsland(Drone drone) {
+    public TravelToIsland(Drone drone, AllPOIS creekSpots) {
         logger.info("Move To Island phase begins.");
         this.reachedEnd = false;
         this.currentState = MoveToIsland.TURN_TO_ISLAND;
         this.drone = drone;
+        this.creekSpots = creekSpots;
     }
 
     @Override
@@ -105,7 +108,7 @@ public class TravelToIsland implements Phase {
     @Override
     public Phase getNextPhase() {
         logger.info("SCANNING LINE");
-        return new ScanLine(this.drone);
+        return new ScanLine(this.drone, this.creekSpots);
     }
 
     @Override
@@ -116,5 +119,10 @@ public class TravelToIsland implements Phase {
     @Override
     public boolean isFinal() {
         return false;
+    }
+
+    @Override
+    public AllPOIS getCreeks(){
+        return creekSpots;
     }
 }

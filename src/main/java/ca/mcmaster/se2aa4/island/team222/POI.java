@@ -1,44 +1,37 @@
 package ca.mcmaster.se2aa4.island.team222;
 
 public class POI {
-
-    public enum POIS{
-       CREEK,SITE;
-    }
-    private int xPosition;
-    private int yPosition;
-    private String id;
-    private POIS type;
     
+    private Coordinate coordinate;
+    private String id;
+    private POIType type;
 
-
-    public POI(int x, int y, String id, POIS type){
-        this.xPosition = x;
-        this.yPosition = y;
+    public POI(Coordinate coordinate, String id, POIType type){
+        this.coordinate = new Coordinate(coordinate.getX(), coordinate.getY());
         this.id = id;
 
-        if(type.equals(POIS.CREEK)){
+        if(type.equals(POIType.CREEK)){
             this.type = type;
         }
-        else if(type.equals(POIS.SITE)){
+        else if(type.equals(POIType.SITE)){
             this.type = type;
         }
     }
 
     public int getX(){
-        return xPosition;
+        return coordinate.getX();
     }
 
     public int getY(){
-        return yPosition;
+        return coordinate.getY();
     }
 
     public String getID(){
         return id;
     }
     
-    public POIS getPoiType(){
-        return type;
+    public POIType getPoiType(){
+        return this.type;
     }
     
 }

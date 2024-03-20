@@ -9,13 +9,14 @@ public class Drone {
     private CardinalDirection direction;
     private Orientation orientation;
     private ScanStatus status;
-    private Coordinate coordinates = new Coordinate(0, 0);
+    private Coordinate coordinates;
 
     public Drone(int battery, CardinalDirection direction) {
         this.battery = battery;
         this.direction = direction;
         this.orientation = Orientation.LEFT;
         this.status = ScanStatus.NONE;
+        this.coordinates = new Coordinate(0, 0);
     }
 
     public int getBattery() {

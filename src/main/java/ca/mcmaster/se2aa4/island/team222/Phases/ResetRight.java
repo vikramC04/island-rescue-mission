@@ -4,6 +4,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
@@ -22,6 +23,7 @@ public class ResetRight implements Phase {
     private Reset currentState;
     private Drone drone;
     private boolean isFinalPhase;
+    private AllPOIS creekSpots;
 
     public enum Reset {
         RIGHT,
@@ -34,12 +36,13 @@ public class ResetRight implements Phase {
         FOURTH_RIGHT,
     }
 
-    public ResetRight(Drone drone) {
+    public ResetRight(Drone drone, AllPOIS creekSpots) {
         logger.info("RESET RIGHT BEGINS");
         this.reachedEnd = false;
         this.currentState = Reset.RIGHT;
         this.drone = drone;
         this.isFinalPhase = false;
+        this.creekSpots = creekSpots;
     }
 
     @Override
@@ -132,7 +135,7 @@ public class ResetRight implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new ScanLine(this.drone);
+        return new ScanLine(this.drone, this.creekSpots);
     }
 
     @Override
@@ -143,5 +146,10 @@ public class ResetRight implements Phase {
     @Override
     public boolean isFinal() {
         return false;
+    }
+
+    @Override
+    public AllPOIS getCreeks(){
+        return creekSpots;
     }
 }

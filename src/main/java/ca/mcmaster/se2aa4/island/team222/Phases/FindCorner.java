@@ -4,7 +4,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
+import ca.mcmaster.se2aa4.island.team222.POI;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.Actions.*;
 import ca.mcmaster.se2aa4.island.team222.Directions.*;
@@ -18,6 +20,8 @@ public class FindCorner implements Phase {
     private boolean reachedEnd;
     private FindCornerState currentState;
     private Drone drone;
+    private AllPOIS creekSpots;
+
 
     //State Variables
     private int range;
@@ -29,11 +33,12 @@ public class FindCorner implements Phase {
         TURNING_RIGHT
     }
 
-    public FindCorner(Drone drone) {
+    public FindCorner(Drone drone, AllPOIS creekLocations) {
         logger.info("FindCorner phase begins.");
         this.reachedEnd = false;
         this.currentState = FindCornerState.CHECKING_LEFT;
         this.drone = drone;
+        this.creekSpots = creekLocations;
     }
 
     @Override
@@ -118,7 +123,7 @@ public class FindCorner implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new FindIsland(this.drone);
+        return new FindIsland(this.drone, this.creekSpots);
     }
 
     @Override
@@ -130,4 +135,10 @@ public class FindCorner implements Phase {
     public boolean isFinal() {
         return false;
     }
+
+    @Override
+    public AllPOIS getCreeks(){
+        return creekSpots;
+    }
+
 }

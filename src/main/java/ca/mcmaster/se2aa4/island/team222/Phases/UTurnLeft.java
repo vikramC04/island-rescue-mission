@@ -4,6 +4,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.island.team222.AllPOIS;
+import ca.mcmaster.se2aa4.island.team222.ClosestCreek;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
@@ -24,6 +26,7 @@ public class UTurnLeft implements Phase {
     private Drone drone;
     private boolean isFinalPhase;
     private boolean reset;
+    private AllPOIS creekSpots;
 
     public enum UTurnState {
         FLY,
@@ -32,12 +35,13 @@ public class UTurnLeft implements Phase {
         ECHO,
     }
 
-    public UTurnLeft(Drone drone) {
+    public UTurnLeft(Drone drone, AllPOIS creekSpots) {
         this.reachedEnd = false;
         this.currentState = UTurnState.FLY;
         this.drone = drone;
         this.isFinalPhase = false;
         this.reset = false;
+        this.creekSpots = creekSpots;
     }
 
     @Override
@@ -102,6 +106,20 @@ public class UTurnLeft implements Phase {
                         this.reset = true;
                     } else {
                         this.isFinalPhase = true;
+                        logger.info("Emergency Site: " + creekSpots.getEmergencySite().getID());
+                        logger.info(creekSpots.getEmergencySite().getX());
+                        logger.info(creekSpots.getEmergencySite().getY());
+                        logger.info("Number of creeks: " + creekSpots.getCreeks().size());
+                        for(int i = 0; i < creekSpots.getCreeks().size(); i++){
+                            logger.info(i + creekSpots.getCreeks().get(i).getID());
+                            logger.info(i + creekSpots.getCreeks().get(i).getX());
+                            logger.info(i + creekSpots.getCreeks().get(i).getY());
+
+                        }
+                        ClosestCreek closestCreek = new ClosestCreek(creekSpots);
+                        logger.info("Closest Creek: " + closestCreek.findClosestCreek().getID());
+                        logger.info(closestCreek.findClosestCreek().getX());
+                        logger.info(closestCreek.findClosestCreek().getY());
                     } 
                 }
                 drone.switchOrientation();
@@ -117,11 +135,11 @@ public class UTurnLeft implements Phase {
     public Phase getNextPhase() {
         if(reset) {
             if(drone.getOrientation() == Orientation.LEFT) {
-                return new ResetLeft(this.drone);
+                return new ResetLeft(this.drone, this.creekSpots);
             }
-            return new ResetRight(this.drone);
+            return new ResetRight(this.drone, this.creekSpots);
         } else {
-            return new ScanLine(this.drone);
+            return new ScanLine(this.drone, this.creekSpots);
         }
     }
 
@@ -133,6 +151,11 @@ public class UTurnLeft implements Phase {
     @Override
     public boolean isFinal() {
         return this.isFinalPhase;
+    }
+
+    @Override
+    public AllPOIS getCreeks(){
+        return creekSpots;
     }
 }
 
