@@ -24,10 +24,11 @@ public class ScanLine implements Phase {
     private ScanLineState currentState;
     private Drone drone;
     private AllPOIS creekSpots;
+    private int groundRange;
 
     public enum ScanLineState {
-        SCAN,
         ECHO,
+        SCAN,
         ECHO_NEIGHBOUR,
         FLY,
         FLY_SINGULAR
@@ -37,7 +38,7 @@ public class ScanLine implements Phase {
     public ScanLine(Drone drone, AllPOIS creeks) {
         logger.info("ScanLine phase begins.");
         this.reachedEnd = false;
-        this.currentState = ScanLineState.SCAN;
+        this.currentState = ScanLineState.ECHO;
         this.drone = drone;
         this.creekSpots = creeks;
     }
@@ -54,11 +55,11 @@ public class ScanLine implements Phase {
         Action nextAction;
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
-            case SCAN:
-                nextAction = drone.scan();
-                break;
             case ECHO:
                 nextAction = drone.echo(RelativeDirection.FORWARD);
+                break;
+            case SCAN:
+                nextAction = drone.scan();
                 break;
             case ECHO_NEIGHBOUR:
                 if(drone.getOrientation() == Orientation.LEFT) {
@@ -99,6 +100,15 @@ public class ScanLine implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
+            case ECHO:     
+                String found = data.get("found").getStringValue();  
+                this.groundRange = data.get("range").getIntValue();                          
+                if(found.equals("OUT_OF_RANGE")) {
+                    this.currentState = ScanLineState.ECHO_NEIGHBOUR;  
+                } else {
+                    this.currentState = ScanLineState.FLY;
+                }   
+                break;
             case SCAN:
                 List<String> biomes = data.get("biomes").getArrayValue();
                 if(!biomes.contains("OCEAN")) {
@@ -127,27 +137,22 @@ public class ScanLine implements Phase {
                     logger.info(i + " " + creekSpots.getCreeks().get(i).getY());
 
                 }
-                
-
                 break;
-            case ECHO:     
-                String found = data.get("found").getStringValue();                             
-                if(found.equals("OUT_OF_RANGE")) {
-                    this.currentState = ScanLineState.ECHO_NEIGHBOUR;  
-                } else {
-                    this.currentState = ScanLineState.FLY;
-                }   
-                break;
-            case ECHO_NEIGHBOUR: 
-                String found_land= data.get("found").getStringValue();                                 
-                if(found_land.equals("OUT_OF_RANGE")) {
+            case ECHO_NEIGHBOUR:   
+                String found_land= data.get("found").getStringValue();                                  
+                if(found_land.equals("OUT_OF_RANGE"))  {
                     this.reachedEnd = true;
                 } else {
                     this.currentState = ScanLineState.FLY_SINGULAR;
                 } 
                 break;    
             case FLY:
-                this.currentState = ScanLineState.SCAN;
+                this.groundRange -= 1;
+                if(this.groundRange > 1) {
+                    this.currentState = ScanLineState.FLY;
+                } else {
+                    this.currentState = ScanLineState.SCAN;
+                }
                 break;
             case FLY_SINGULAR:
                 this.currentState = ScanLineState.ECHO_NEIGHBOUR;
