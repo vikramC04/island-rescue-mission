@@ -7,6 +7,8 @@ import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+
+
 public class CardinalDirectionTest {
     @Test
     public void testNextRight() {
