@@ -131,16 +131,17 @@ public class ScanLine implements Phase {
 
                 break;
             case ECHO:     
-                String found = data.get("found").getStringValue();                             
+                String found = data.get("found").getStringValue();                           
                 if(found.equals("OUT_OF_RANGE")) {
                     this.currentState = ScanLineState.ECHO_NEIGHBOUR;  
                 } else {
                     this.currentState = ScanLineState.FLY;
                 }   
                 break;
-            case ECHO_NEIGHBOUR: 
-                String found_land= data.get("found").getStringValue();                                 
-                if(found_land.equals("OUT_OF_RANGE")) {
+            case ECHO_NEIGHBOUR:
+                int range = data.get("range").getIntValue();    
+                String found_land= data.get("found").getStringValue();                                  
+                if(found_land.equals("OUT_OF_RANGE"))  {
                     this.reachedEnd = true;
                 } else {
                     this.currentState = ScanLineState.FLY_SINGULAR;
