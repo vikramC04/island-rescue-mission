@@ -68,7 +68,7 @@ public class FindCorner implements Phase {
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
         }
-        logger.info("Next Action: " + nextAction.getActionType());
+        logger.info("Next Action: " + nextAction.getType());
 
         return nextAction;
     }
