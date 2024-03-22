@@ -15,7 +15,7 @@ import ca.mcmaster.se2aa4.island.team222.Phases.ScanLine.ScanLineState;
 import ca.mcmaster.se2aa4.island.team222.Phases.TravelToIsland.MoveToIsland;
 import ca.mcmaster.se2aa4.island.team222.Responses.Response;
 
-public class ResetRight implements Phase {
+public class ResetLR implements Phase {
 
     private final Logger logger = LogManager.getLogger();
 
@@ -26,6 +26,7 @@ public class ResetRight implements Phase {
     private boolean isFinalPhase;
     private boolean need_to_scan;
     private AllPOIS creekSpots;
+    private Orientation droneOrientation;
 
 
     public enum Reset {
@@ -48,7 +49,7 @@ public class ResetRight implements Phase {
     }
 
 
-    public ResetRight(Drone drone, AllPOIS creekSpots) {
+    public ResetLR(Drone drone, AllPOIS creekSpots, Orientation droneOrientation) {
         logger.info("RESET RIGHT BEGINS");
         this.reachedEnd = false;
         this.currentState = Reset.ECHO_LEFT;
@@ -56,6 +57,7 @@ public class ResetRight implements Phase {
         this.isFinalPhase = false;
         this.need_to_scan = false;
         this.creekSpots = creekSpots;
+        this.droneOrientation = droneOrientation;
     }
 
     @Override
@@ -70,13 +72,21 @@ public class ResetRight implements Phase {
         logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
             case ECHO_LEFT:
-                nextAction = drone.echo(RelativeDirection.LEFT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.echo(RelativeDirection.LEFT);
+                } else {
+                    nextAction = drone.echo(RelativeDirection.RIGHT);
+                }
                 break;
             case FLY:
                 nextAction = drone.fly();
                 break;
             case LEFT:
-                nextAction = drone.heading(RelativeDirection.LEFT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                }
                 break;
             case FORWARD:
                 nextAction = drone.fly();
@@ -88,31 +98,55 @@ public class ResetRight implements Phase {
                 nextAction = drone.fly();
                 break;
             case SECOND_LEFT:
-                nextAction = drone.heading(RelativeDirection.LEFT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                }
                 break;
             case FOURTH_FORWARD:
                 nextAction = drone.fly();
                 break;
             case THIRD_LEFT:
-                nextAction = drone.heading(RelativeDirection.LEFT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                }
                 break;
             case FOURTH_LEFT:
-                nextAction = drone.heading(RelativeDirection.LEFT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                }
                 break; 
             case FIFTH_FORWARD:
                 nextAction = drone.fly();
                 break;  
             case RIGHT:
-                nextAction = drone.heading(RelativeDirection.RIGHT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                }
                 break;
             case SECOND_RIGHT:
-                nextAction = drone.heading(RelativeDirection.RIGHT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                }
                 break; 
             case ECHO_FORWARD:
                 nextAction = drone.echo(RelativeDirection.FORWARD);
                 break; 
             case ECHO_RIGHT:
-                nextAction = drone.echo(RelativeDirection.RIGHT);
+                if(droneOrientation == Orientation.RIGHT) {
+                    nextAction = drone.echo(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.echo(RelativeDirection.LEFT);
+                }
                 break; 
             case FLY_SINGULAR:
                 nextAction = drone.fly();
@@ -215,7 +249,7 @@ public class ResetRight implements Phase {
         if(this.need_to_scan) {
             return new ScanLine(this.drone, this.creekSpots);
         } 
-        return new UTurnRight(this.drone, this.creekSpots);
+        return new UTurn(this.drone, this.creekSpots, Orientation.RIGHT);
     }
 
     @Override

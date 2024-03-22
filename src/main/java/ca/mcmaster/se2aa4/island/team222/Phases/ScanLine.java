@@ -165,10 +165,7 @@ public class ScanLine implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        if(drone.getOrientation() == Orientation.LEFT) {
-            return new UTurnLeft(this.drone, this.creekSpots);
-        }
-        return new UTurnRight(this.drone, this.creekSpots);
+        return new UTurn(this.drone, this.creekSpots,drone.getOrientation());
     }
 
     @Override
