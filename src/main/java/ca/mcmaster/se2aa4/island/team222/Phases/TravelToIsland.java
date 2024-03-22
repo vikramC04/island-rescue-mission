@@ -21,10 +21,10 @@ public class TravelToIsland implements Phase {
     private MoveToIsland currentState;
     private Drone drone;
     private AllPOIS creekSpots;
+    private int groundRange;
 
     public enum MoveToIsland {
         TURN_TO_ISLAND,
-        SCANNING,
         ECHOING,
         FLYING
     }
@@ -51,9 +51,6 @@ public class TravelToIsland implements Phase {
         switch(this.currentState) {
             case TURN_TO_ISLAND:
                 nextAction = drone.heading(RelativeDirection.RIGHT);
-                break;
-            case SCANNING:
-                nextAction = drone.scan();
                 break;
             case ECHOING:
                 nextAction = drone.echo(RelativeDirection.FORWARD);
@@ -82,22 +79,24 @@ public class TravelToIsland implements Phase {
         //Updates the current state using the response
         switch(this.currentState) {
             case TURN_TO_ISLAND:
-                this.currentState = MoveToIsland.SCANNING;
-                break;
-            case SCANNING:
-                this.currentState = MoveToIsland.ECHOING;        //Fly forward
+                this.currentState = MoveToIsland.ECHOING;
                 break;
             case ECHOING:
                 String found = data.get("found").getStringValue();
-                int range = data.get("range").getIntValue();  
+                int range = data.get("range").getIntValue();
                 if(found.equals("GROUND") && range == 0) {
                     this.reachedEnd = true;
                 } else {
                     this.currentState = MoveToIsland.FLYING;
-                }  
+                }
+                this.groundRange= range;   
                 break;
             case FLYING:
-                this.currentState = MoveToIsland.SCANNING;        //Fly forward
+                this.groundRange -= 1;
+                if(this.groundRange < 2) {
+                    this.reachedEnd = true;
+                }
+                this.currentState = MoveToIsland.FLYING;        
                 break;
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
