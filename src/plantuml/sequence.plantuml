@@ -1,0 +1,45 @@
+@startuml
+
+title Drone Interaction
+
+participant DroneController
+participant Drone
+participant DroneMoveList
+participant Explorer
+
+Explorer -> DroneController: initialize(info)
+activate DroneController
+DroneController -> Drone: new Drone(direction, batteryLevel)
+activate Drone
+deactivate Drone
+deactivate DroneController
+
+loop until exploration ends
+    Explorer -> DroneController: takeDecision()
+    activate DroneController
+    DroneController -> Drone: decide()
+    activate Drone
+    Drone --> DroneController: JSONObject
+    deactivate Drone
+    deactivate DroneController
+
+    DroneController -> Drone: echoAll()
+    activate Drone
+    Drone --> DroneController: echo(direction)
+    deactivate Drone
+
+    Explorer -> DroneController: acknowledgeResults(response)
+    activate DroneController
+    DroneController -> Drone: react(response)
+    activate Drone
+    Drone --> DroneController: updateBatteryLevel()
+    Drone --> DroneController: getBattery()
+    Drone --> DroneController: addMove(move)
+    Drone --> DroneController: addMove(scan)
+    deactivate Drone
+    deactivate DroneController
+end
+
+Explorer -> Explorer: deliverFinalReport()
+
+@enduml
