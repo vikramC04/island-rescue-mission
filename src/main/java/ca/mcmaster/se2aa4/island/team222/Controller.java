@@ -47,7 +47,7 @@ public class Controller {
         Action nextAction = currentPhase.getNextDecision();
 
         //Save previous action type
-        previousAction = nextAction.getActionType();
+        previousAction = nextAction.getType();
 
         //Return the next action from the phase
         return nextAction;

@@ -92,8 +92,6 @@ public class Drone {
                 throw new IllegalStateException("Unexpected value: " + direction);
         }
 
-        //TODO: Update the drone's positon here
-
         return new Action(ActionType.ECHO, echoDirection);
     }
 
@@ -135,7 +133,7 @@ public class Drone {
                 headingDirection = this.direction.nextRight();
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + direction);
+                throw new IllegalStateException("Unexpected value: " + directionRelative);
         }
 
         // update the new direction after turning
