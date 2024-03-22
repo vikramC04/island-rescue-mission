@@ -38,6 +38,8 @@ public class ClosestCreek {
             }
 
         }
+        // return the creek at the start of the scan
+        closestCreek = creeks.get(0);
         return closestCreek;
     }
 }
