@@ -9,6 +9,7 @@ import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
 public class Action {
 
     private ActionType actionType;
+    private CardinalDirection actionDirection;
     private Map<String, String> parameters = new HashMap<>();
 
     //Actions with no Parameters
@@ -19,6 +20,7 @@ public class Action {
     //Actions with direction Parameter
     public Action(ActionType actionType, CardinalDirection direction) {
         this.actionType = actionType;
+        this.actionDirection = direction;
         this.parameters.put("direction", String.valueOf(direction));
     }
 
@@ -60,7 +62,11 @@ public class Action {
         return obj;
     }
 
-    public ActionType getActionType() {
+    public ActionType getType() {
         return this.actionType;
+    }
+
+    public CardinalDirection getDirection() {
+        return this.actionDirection;
     }
 }
