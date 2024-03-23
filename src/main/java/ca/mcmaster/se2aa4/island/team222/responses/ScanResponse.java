@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team222.Responses;
+package ca.mcmaster.se2aa4.island.team222.responses;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import ca.mcmaster.se2aa4.island.team222.Value;
-import ca.mcmaster.se2aa4.island.team222.Actions.ActionType;
+import ca.mcmaster.se2aa4.island.team222.actions.ActionType;
 
 public class ScanResponse implements Response{
     
@@ -20,7 +20,6 @@ public class ScanResponse implements Response{
     private List<String> biomes;
     private List<String> creeks;
     private List<String> sites;
-    //private List<POI> creekLocations;
     
     public ScanResponse(JSONObject response) {
         this.cost = response.getInt("cost");

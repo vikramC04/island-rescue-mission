@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team222.Directions;
+package ca.mcmaster.se2aa4.island.team222.directions;
 
 public enum CardinalDirection {
     
@@ -20,7 +20,8 @@ public enum CardinalDirection {
                 newDirection = S;
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + this);
+                throw new IllegalStateException(String.format("Unexpected value: %s", this));
+
         }
         return newDirection;
     }
@@ -41,7 +42,8 @@ public enum CardinalDirection {
                 newDirection = N;
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + this);
+                throw new IllegalStateException(String.format("Unexpected value: %s", this));
+
         }
         return newDirection;
     }

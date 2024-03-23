@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team222.Phases;
+package ca.mcmaster.se2aa4.island.team222.phases;
 
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -9,39 +9,38 @@ import ca.mcmaster.se2aa4.island.team222.ClosestCreek;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.*;
-import ca.mcmaster.se2aa4.island.team222.Phases.FindCorner.FindCornerState;
-import ca.mcmaster.se2aa4.island.team222.Phases.ScanLine.ScanLineState;
-import ca.mcmaster.se2aa4.island.team222.Phases.TravelToIsland.MoveToIsland;
-import ca.mcmaster.se2aa4.island.team222.Responses.Response;
+import ca.mcmaster.se2aa4.island.team222.actions.*;
+import ca.mcmaster.se2aa4.island.team222.directions.*;
+import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
-public class UTurnRight implements Phase {
+public class UTurn implements Phase {
 
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
     private boolean reachedEnd;
-    private UTurn currentState;
+    private UTurnLR currentState;
     private Drone drone;
     private boolean isFinalPhase;
     private boolean reset;
     private AllPOIS creekSpots;
+    private Orientation orientation;
 
-    public enum UTurn {
-        RIGHT,
-        SECOND_RIGHT,
+    public enum UTurnLR {
+        TURN,
+        SECOND_TURN,
         ECHO,
     }
 
-    public UTurnRight(Drone drone, AllPOIS creekSpots) {
+    public UTurn(Drone drone, AllPOIS creekSpots, Orientation orientation) {
         logger.info("Find corner phase begins.");
         this.reachedEnd = false;
-        this.currentState = UTurn.RIGHT;
+        this.currentState = UTurnLR.TURN;
         this.drone = drone;
         this.isFinalPhase = false;
         this.reset = false;
         this.creekSpots = creekSpots;
+        this.orientation = orientation;
     }
 
     @Override
@@ -54,21 +53,28 @@ public class UTurnRight implements Phase {
 
         //Get the next action based on the current state and the drone
         Action nextAction;
-        logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
-            case RIGHT:
-                nextAction = drone.heading(RelativeDirection.RIGHT);
+            case TURN:
+                if(orientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                }
                 break;
-            case SECOND_RIGHT:
-                nextAction = drone.heading(RelativeDirection.RIGHT);
+            case SECOND_TURN:
+                if(orientation == Orientation.RIGHT) {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                }
                 break;
             case ECHO:
                 nextAction = drone.echo(RelativeDirection.FORWARD);
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
         }
-        logger.info("Next Action: " + nextAction.getType());
 
         return nextAction;
     }
@@ -88,11 +94,11 @@ public class UTurnRight implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
-            case RIGHT: 
-                this.currentState = UTurn.SECOND_RIGHT;        
+            case TURN: 
+                this.currentState = UTurnLR.SECOND_TURN;        
                 break;
-            case SECOND_RIGHT:
-                this.currentState = UTurn.ECHO; 
+            case SECOND_TURN:
+                this.currentState = UTurnLR.ECHO; 
                 break;
             case ECHO:
                 String found = data.get("found").getStringValue();
@@ -130,10 +136,7 @@ public class UTurnRight implements Phase {
     @Override
     public Phase getNextPhase() {
         if(reset) {
-            if(drone.getOrientation() == Orientation.LEFT) {
-                return new ResetLeft(this.drone, this.creekSpots);
-            }
-            return new ResetRight(this.drone, this.creekSpots);
+            return new ResetLR(this.drone, this.creekSpots, drone.getOrientation());
         } else {
             return new ScanLine(this.drone, this.creekSpots);
         }

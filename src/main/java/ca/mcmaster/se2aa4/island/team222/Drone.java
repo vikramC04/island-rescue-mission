@@ -1,7 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.*;
+import ca.mcmaster.se2aa4.island.team222.actions.*;
+import ca.mcmaster.se2aa4.island.team222.directions.*;
 
 public class Drone {
 

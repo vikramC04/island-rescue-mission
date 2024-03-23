@@ -6,10 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
-import ca.mcmaster.se2aa4.island.team222.Phases.*;
-import ca.mcmaster.se2aa4.island.team222.Responses.*;
+import ca.mcmaster.se2aa4.island.team222.actions.*;
+import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
+import ca.mcmaster.se2aa4.island.team222.phases.*;
+import ca.mcmaster.se2aa4.island.team222.responses.*;
 
 public class Controller {
 
@@ -17,7 +17,7 @@ public class Controller {
     
     private Phase currentPhase;
     private ActionType previousAction;
-    private POI closestCreek;
+    private ClosestCreek creeks;
     
     public Controller(int batteryLevel, CardinalDirection direction) {
         this.currentPhase = new FindCorner(new Drone(batteryLevel, direction), new AllPOIS(new ArrayList<>()));
@@ -33,8 +33,7 @@ public class Controller {
             if(currentPhase.isFinal()) {
                 logger.info("Final phase end.");
                 AllPOIS creekLocations = currentPhase.getCreeks();
-                ClosestCreek findCreek = new ClosestCreek(creekLocations);
-                closestCreek = findCreek.findClosestCreek();
+                creeks = new ClosestCreek(creekLocations);
                 previousAction = ActionType.STOP; 
                 return new Action(ActionType.STOP);
             }
@@ -81,6 +80,8 @@ public class Controller {
     }
 
     public String generateReport(){
+        POI closestCreek = creeks.findClosestCreek();
+        logger.info("closest creek: " + closestCreek.getID());
         return closestCreek.getID();
 
     }

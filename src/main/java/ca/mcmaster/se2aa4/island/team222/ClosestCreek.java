@@ -1,12 +1,9 @@
 package ca.mcmaster.se2aa4.island.team222;
 
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ClosestCreek {
 
-    private final Logger logger = LogManager.getLogger();
     private AllPOIS allPOIS;
     private POI closestCreek;
 
@@ -38,8 +35,11 @@ public class ClosestCreek {
             }
 
         }
-        // return the creek at the start of the scan
-        closestCreek = creeks.get(0);
+        else{
+            // return the creek at the start of the scan
+            closestCreek = creeks.get(0);
+        }
+        
         return closestCreek;
     }
 }
