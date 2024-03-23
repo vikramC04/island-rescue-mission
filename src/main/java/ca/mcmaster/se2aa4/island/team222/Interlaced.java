@@ -11,7 +11,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.phases.*;
 import ca.mcmaster.se2aa4.island.team222.responses.*;
 
-public class Controller implements Scan {
+public class Interlaced implements Scan {
 
     private final Logger logger = LogManager.getLogger();
     
@@ -19,7 +19,7 @@ public class Controller implements Scan {
     private ActionType previousAction;
     private ClosestCreek creeks;
     
-    public Controller(int batteryLevel, CardinalDirection direction) {
+    public Interlaced(int batteryLevel, CardinalDirection direction) {
         this.currentPhase = new FindCorner(new Drone(batteryLevel, direction), new AllPOIS(new ArrayList<>()));
     }
 

@@ -13,7 +13,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
-    private Controller controller;
+    private Interlaced controller;
 
 
     @Override
@@ -23,7 +23,7 @@ public class Explorer implements IExplorerRaid {
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
         int batteryLevel = info.getInt("budget");
-        controller = new Controller(batteryLevel, CardinalDirection.valueOf(direction));
+        controller = new Interlaced(batteryLevel, CardinalDirection.valueOf(direction));
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
