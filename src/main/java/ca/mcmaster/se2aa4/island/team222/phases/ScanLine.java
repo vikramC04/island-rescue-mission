@@ -1,6 +1,4 @@
 package ca.mcmaster.se2aa4.island.team222.phases;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -134,8 +132,9 @@ public class ScanLine implements Phase {
                 }
                 break;
             case ECHO_NEIGHBOUR:   
-                String found_land= data.get("found").getStringValue();                                  
-                if(found_land.equals("OUT_OF_RANGE"))  {
+                String found_land= data.get("found").getStringValue();
+                int range = data.get("range").getIntValue();                                  
+                if(found_land.equals("OUT_OF_RANGE") || range > 2)  {
                     this.reachedEnd = true;
                 } else {
                     this.currentState = ScanLineState.FLY_SINGULAR;
