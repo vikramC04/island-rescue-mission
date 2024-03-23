@@ -249,7 +249,7 @@ public class ResetLR implements Phase {
         if(this.need_to_scan) {
             return new ScanLine(this.drone, this.creekSpots);
         } 
-        return new UTurn(this.drone, this.creekSpots, Orientation.RIGHT);
+        return new UTurn(this.drone, this.creekSpots, drone.getOrientation());
     }
 
     @Override
