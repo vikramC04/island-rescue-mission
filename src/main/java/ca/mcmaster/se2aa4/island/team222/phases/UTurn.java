@@ -11,9 +11,6 @@ import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
-import ca.mcmaster.se2aa4.island.team222.phases.FindCorner.FindCornerState;
-import ca.mcmaster.se2aa4.island.team222.phases.ScanLine.ScanLineState;
-import ca.mcmaster.se2aa4.island.team222.phases.TravelToIsland.MoveToIsland;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class UTurn implements Phase {
@@ -56,7 +53,6 @@ public class UTurn implements Phase {
 
         //Get the next action based on the current state and the drone
         Action nextAction;
-        logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
             case TURN:
                 if(orientation == Orientation.RIGHT) {
@@ -76,9 +72,9 @@ public class UTurn implements Phase {
                 nextAction = drone.echo(RelativeDirection.FORWARD);
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
         }
-        logger.info("Next Action: " + nextAction.getType());
 
         return nextAction;
     }

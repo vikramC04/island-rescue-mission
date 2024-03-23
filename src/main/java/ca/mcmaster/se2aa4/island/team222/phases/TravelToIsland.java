@@ -9,7 +9,6 @@ import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.*;
-import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.directions.RelativeDirection;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
@@ -59,10 +58,9 @@ public class TravelToIsland implements Phase {
                 nextAction = drone.fly();
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
         }
-        logger.info("Next Action: " + nextAction.getType());
-        //Return the action
         return nextAction;
     }
 
@@ -99,9 +97,9 @@ public class TravelToIsland implements Phase {
                 this.currentState = MoveToIsland.FLYING;        
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
         }
-        logger.info("Next State: " + this.currentState);
     }
 
     @Override

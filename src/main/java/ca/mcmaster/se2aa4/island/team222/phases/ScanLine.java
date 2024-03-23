@@ -53,7 +53,6 @@ public class ScanLine implements Phase {
 
         //Get the next action based on the current state and the drone
         Action nextAction;
-        logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
             case ECHO:
                 nextAction = drone.echo(RelativeDirection.FORWARD);
@@ -75,10 +74,9 @@ public class ScanLine implements Phase {
                 nextAction = drone.fly();
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
-        }
-        logger.info("Next Action: " + nextAction.getType());
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
 
+        }
         return nextAction;
     }
 
@@ -94,10 +92,7 @@ public class ScanLine implements Phase {
 
         //Get the data from the response
         Map<String, Value> data = response.getData();
-        //logger.info(data.get("creeks").getStringValue());S
-        
       
-
         //Updates the current state using the response
         switch(this.currentState) {
             case ECHO:     
@@ -158,9 +153,9 @@ public class ScanLine implements Phase {
                 this.currentState = ScanLineState.ECHO_NEIGHBOUR;
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
         }
-        logger.info("Next State: " + this.currentState);
     }
 
     @Override

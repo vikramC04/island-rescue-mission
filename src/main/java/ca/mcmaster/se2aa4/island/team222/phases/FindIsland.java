@@ -45,7 +45,6 @@ public class FindIsland implements Phase {
 
         //Get the next action based on the current state and the drone
         Action nextAction;
-        logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
             case ECHO_RIGHT:
                 nextAction = drone.echo(RelativeDirection.RIGHT);
@@ -54,10 +53,9 @@ public class FindIsland implements Phase {
                 nextAction = drone.fly();
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
-        }
-        logger.info("Next Action: " + nextAction.getType());
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
 
+        }
         return nextAction;
     }
 
@@ -85,9 +83,8 @@ public class FindIsland implements Phase {
                 this.currentState = FindIslandState.ECHO_RIGHT;
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
         }
-        logger.info("Next State: " + this.currentState);
     }
 
     @Override

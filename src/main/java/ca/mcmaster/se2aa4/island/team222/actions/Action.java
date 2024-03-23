@@ -11,6 +11,9 @@ public class Action {
     private ActionType actionType;
     private CardinalDirection actionDirection;
     private Map<String, String> parameters = new HashMap<>();
+    private final String direction = "direction";
+    private final String action = "action";
+
 
     //Actions with no Parameters
     public Action(ActionType actionType) {
@@ -18,10 +21,10 @@ public class Action {
     }
 
     //Actions with direction Parameter
-    public Action(ActionType actionType, CardinalDirection direction) {
+    public Action(ActionType actionType, CardinalDirection cardinalDirection) {
         this.actionType = actionType;
-        this.actionDirection = direction;
-        this.parameters.put("direction", String.valueOf(direction));
+        this.actionDirection = cardinalDirection;
+        this.parameters.put(direction, String.valueOf(cardinalDirection));
     }
 
 
@@ -32,31 +35,32 @@ public class Action {
 
         switch(this.actionType) {
             case FLY:
-                obj.put("action", "fly");
+                obj.put(action, "fly");
                 break;
 
             case SCAN:
-                obj.put("action", "scan");
+                obj.put(action, "scan");
                 break;
 
             case STOP:
-                obj.put("action", "stop");
+                obj.put(action, "stop");
                 break;
 
             case HEADING:
-                obj.put("action", "heading");
-                parameters.put("direction", this.parameters.get("direction"));
+                obj.put(action, "heading");
+                parameters.put(direction, this.parameters.get(direction));
                 obj.put("parameters", parameters);
                 break;
 
             case ECHO:
-                obj.put("action", "echo");
-                parameters.put("direction", this.parameters.get("direction"));
+                obj.put(action, "echo");
+                parameters.put(direction, this.parameters.get(direction));
                 obj.put("parameters", parameters);
                 break;
 
             default:
-                throw new IllegalStateException("Undefined response type: " + this.actionType);
+                throw new IllegalStateException(String.format("Undefined response type: %s", this.actionType));
+
         }
 
         return obj;

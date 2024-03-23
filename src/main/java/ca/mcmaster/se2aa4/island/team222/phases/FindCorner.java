@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
-import ca.mcmaster.se2aa4.island.team222.POI;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
@@ -51,7 +50,6 @@ public class FindCorner implements Phase {
 
         //Get the next action based on the current state and the drone
         Action nextAction;
-        logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
             case CHECKING_LEFT:
                 nextAction = drone.echo(RelativeDirection.LEFT);
@@ -66,10 +64,9 @@ public class FindCorner implements Phase {
                 nextAction = drone.heading(RelativeDirection.RIGHT);
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
-        }
-        logger.info("Next Action: " + nextAction.getType());
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
 
+        }
         return nextAction;
     }
 
@@ -78,7 +75,6 @@ public class FindCorner implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
-        logger.info("Drone new battery: " + this.drone.getBattery());
      
         //Get the data from the response
         Map<String, Value> data = response.getData();
@@ -87,7 +83,7 @@ public class FindCorner implements Phase {
         switch(this.currentState) {
             case CHECKING_LEFT:
                 this.range = data.get("range").getIntValue();           //Set the distance until the wall
-                logger.info("Distance to wall: " + this.range);
+                logger.info(this.range);
                 if (this.range > 2) {                                       //Check if the drone is close to the wall                                                           
                     this.currentState = FindCornerState.TURNING_LEFT;       //Turn left if it isnt
                 } else {
@@ -97,7 +93,7 @@ public class FindCorner implements Phase {
 
             case TURNING_LEFT:
                 this.range -= 1;                                            //Drone gets 1 unit closer to the wall
-                logger.info("Distance to wall: " + this.range);
+                logger.info(this.range);
                 this.currentState = FindCornerState.FLYING_FORWARD;         //Fly forward
                 break;
 
@@ -105,7 +101,7 @@ public class FindCorner implements Phase {
                 if (this.range > 2) {                                       //Check if the drone is close to the wall
                     this.currentState = FindCornerState.FLYING_FORWARD;     //Continue to fly forward
                     this.range -= 1;                                        //Gets 1 unit closer to the wall
-                    logger.info("Distance to wall: " + this.range);
+                    logger.info(this.range);
                 } else {     
                     this.currentState = FindCornerState.TURNING_RIGHT;      //Turn right if it is close
                 }
@@ -116,9 +112,9 @@ public class FindCorner implements Phase {
                 break;
 
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
         }
-        logger.info("Next State: " + this.currentState);
     }
 
     @Override

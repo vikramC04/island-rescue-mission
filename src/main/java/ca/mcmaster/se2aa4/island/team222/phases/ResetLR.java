@@ -6,13 +6,9 @@ import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
-import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
-import ca.mcmaster.se2aa4.island.team222.phases.FindCorner.FindCornerState;
-import ca.mcmaster.se2aa4.island.team222.phases.ScanLine.ScanLineState;
-import ca.mcmaster.se2aa4.island.team222.phases.TravelToIsland.MoveToIsland;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class ResetLR implements Phase {
@@ -23,10 +19,12 @@ public class ResetLR implements Phase {
     private boolean reachedEnd;
     private Reset currentState;
     private Drone drone;
-    private boolean isFinalPhase;
     private boolean need_to_scan;
     private AllPOIS creekSpots;
     private Orientation droneOrientation;
+    private final String found = "found";
+    private final String ground = "GROUND";
+
 
 
     public enum Reset {
@@ -54,7 +52,6 @@ public class ResetLR implements Phase {
         this.reachedEnd = false;
         this.currentState = Reset.ECHO_LEFT;
         this.drone = drone;
-        this.isFinalPhase = false;
         this.need_to_scan = false;
         this.creekSpots = creekSpots;
         this.droneOrientation = droneOrientation;
@@ -69,7 +66,6 @@ public class ResetLR implements Phase {
 
         //Get the next action based on the current state and the drone
         Action nextAction;
-        logger.info("Current State: " + this.currentState);
         switch(this.currentState) {
             case ECHO_LEFT:
                 if(droneOrientation == Orientation.RIGHT) {
@@ -152,9 +148,9 @@ public class ResetLR implements Phase {
                 nextAction = drone.fly();
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
         }
-        logger.info("Next Action: " + nextAction.getType());
 
         return nextAction;
     }
@@ -172,8 +168,8 @@ public class ResetLR implements Phase {
         //Updates the current state using the response
         switch(this.currentState) {
             case ECHO_LEFT:
-                String found = data.get("found").getStringValue(); 
-                if(found.equals("GROUND")) {
+                String groundFound = data.get(found).getStringValue(); 
+                if(groundFound.equals("ground")) {
                     this.currentState = Reset.FLY;
                 } else {
                     this.currentState = Reset.LEFT;
@@ -216,8 +212,8 @@ public class ResetLR implements Phase {
                 this.currentState = Reset.ECHO_FORWARD;
                 break;
             case ECHO_FORWARD:
-                String found_forward = data.get("found").getStringValue(); 
-                if(found_forward.equals("GROUND")) {
+                String found_forward = data.get(found).getStringValue(); 
+                if(found_forward.equals(ground)) {
                     logger.info("GROUND IS AHEAD");
                     this.reachedEnd = true;
                     this.need_to_scan = true;
@@ -227,8 +223,8 @@ public class ResetLR implements Phase {
                 } 
                 break; 
             case ECHO_RIGHT:
-                String found_left = data.get("found").getStringValue(); 
-                if(found_left.equals("GROUND")) {
+                String found_left = data.get(found).getStringValue(); 
+                if(found_left.equals(ground)) {
                     this.currentState = Reset.FLY_SINGULAR;
                 } else {
                     this.reachedEnd = true;
@@ -238,7 +234,9 @@ public class ResetLR implements Phase {
                 this.currentState = Reset.ECHO_RIGHT;
                 break;
             default:
-                throw new IllegalStateException("Undefined state: " + this.currentState);
+                throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
+
+                
         }
         logger.info("Next State: " + this.currentState);
     }

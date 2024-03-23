@@ -20,7 +20,6 @@ public class ScanResponse implements Response{
     private List<String> biomes;
     private List<String> creeks;
     private List<String> sites;
-    //private List<POI> creekLocations;
     
     public ScanResponse(JSONObject response) {
         this.cost = response.getInt("cost");
