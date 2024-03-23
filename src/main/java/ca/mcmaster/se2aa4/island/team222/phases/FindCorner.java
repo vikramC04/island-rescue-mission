@@ -98,7 +98,7 @@ public class FindCorner implements Phase {
                 break;
 
             case FLYING_FORWARD:
-                if (this.range > 2) {                                       //Check if the drone is close to the wall
+                if (this.range > 3) {                                       //Check if the drone is close to the wall
                     this.currentState = FindCornerState.FLYING_FORWARD;     //Continue to fly forward
                     this.range -= 1;                                        //Gets 1 unit closer to the wall
                     logger.info(this.range);

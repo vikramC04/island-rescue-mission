@@ -1,6 +1,5 @@
 package ca.mcmaster.se2aa4.island.team222.phases;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -25,13 +24,15 @@ public class ScanLine implements Phase {
     private Drone drone;
     private AllPOIS creekSpots;
     private int groundRange;
+    private boolean final_scan;
+    private boolean found_ground;
 
     public enum ScanLineState {
         ECHO,
         SCAN,
         ECHO_NEIGHBOUR,
         FLY,
-        FLY_SINGULAR
+        FLY_SINGULAR,
     }
 
 
@@ -41,6 +42,8 @@ public class ScanLine implements Phase {
         this.currentState = ScanLineState.ECHO;
         this.drone = drone;
         this.creekSpots = creeks;
+        this.final_scan = false;
+        this.found_ground = false;
     }
 
     @Override
@@ -99,19 +102,23 @@ public class ScanLine implements Phase {
                 String found = data.get("found").getStringValue();  
                 this.groundRange = data.get("range").getIntValue();                          
                 if(found.equals("OUT_OF_RANGE")) {
-                    this.currentState = ScanLineState.ECHO_NEIGHBOUR;  
+                    final_scan = true;
+                    this.currentState = ScanLineState.SCAN;  
                 } else {
                     this.currentState = ScanLineState.FLY;
                 }   
                 break;
             case SCAN:
                 List<String> biomes = data.get("biomes").getArrayValue();
-                if(!biomes.contains("OCEAN")) {
+                if(final_scan) {
+                    this.currentState = ScanLineState.ECHO_NEIGHBOUR;
+                } else if(!biomes.contains("OCEAN")) {
                     logger.info("On Ground");
                     this.currentState = ScanLineState.FLY;
                 } else {
                     this.currentState = ScanLineState.ECHO;
                 }
+                
             
                 List<String> creeks = data.get("creeks").getArrayValue();
                 List<String> sites = data.get("sites").getArrayValue();
@@ -133,21 +140,17 @@ public class ScanLine implements Phase {
 
                 }
                 break;
-            case ECHO_NEIGHBOUR:   
+            case ECHO_NEIGHBOUR: 
+                int range = data.get("range").getIntValue();  
                 String found_land= data.get("found").getStringValue();                                  
-                if(found_land.equals("OUT_OF_RANGE"))  {
+                if(found_land.equals("OUT_OF_RANGE") || range > 2)  {
                     this.reachedEnd = true;
                 } else {
                     this.currentState = ScanLineState.FLY_SINGULAR;
                 } 
                 break;    
             case FLY:
-                this.groundRange -= 1;
-                if(this.groundRange > 1) {
-                    this.currentState = ScanLineState.FLY;
-                } else {
-                    this.currentState = ScanLineState.SCAN;
-                }
+                this.currentState = ScanLineState.SCAN;
                 break;
             case FLY_SINGULAR:
                 this.currentState = ScanLineState.ECHO_NEIGHBOUR;

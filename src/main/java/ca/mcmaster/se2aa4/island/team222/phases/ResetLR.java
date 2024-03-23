@@ -168,8 +168,9 @@ public class ResetLR implements Phase {
         //Updates the current state using the response
         switch(this.currentState) {
             case ECHO_LEFT:
-                String groundFound = data.get(found).getStringValue(); 
-                if(groundFound.equals("ground")) {
+                String groundFound = data.get(found).getStringValue();
+                int range_left = data.get("range").getIntValue();  
+                if(groundFound.equals("ground") && range_left < 2) {
                     this.currentState = Reset.FLY;
                 } else {
                     this.currentState = Reset.LEFT;
@@ -223,8 +224,9 @@ public class ResetLR implements Phase {
                 } 
                 break; 
             case ECHO_RIGHT:
-                String found_left = data.get(found).getStringValue(); 
-                if(found_left.equals(ground)) {
+                String found_right = data.get(found).getStringValue();
+                int range_right = data.get("range").getIntValue();   
+                if(found_right.equals(ground) && range_right < 2) {
                     this.currentState = Reset.FLY_SINGULAR;
                 } else {
                     this.reachedEnd = true;
