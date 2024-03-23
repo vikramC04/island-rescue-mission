@@ -23,13 +23,14 @@ public class ScanLine implements Phase {
     private Drone drone;
     private AllPOIS creekSpots;
     private int groundRange;
+    private boolean final_scan;
 
     public enum ScanLineState {
         ECHO,
         SCAN,
         ECHO_NEIGHBOUR,
         FLY,
-        FLY_SINGULAR
+        FLY_SINGULAR,
     }
 
 
@@ -39,6 +40,7 @@ public class ScanLine implements Phase {
         this.currentState = ScanLineState.ECHO;
         this.drone = drone;
         this.creekSpots = creeks;
+        this.final_scan = false;
     }
 
     @Override
@@ -97,14 +99,17 @@ public class ScanLine implements Phase {
                 String found = data.get("found").getStringValue();  
                 this.groundRange = data.get("range").getIntValue();                          
                 if(found.equals("OUT_OF_RANGE")) {
-                    this.currentState = ScanLineState.ECHO_NEIGHBOUR;  
+                    final_scan = true;
+                    this.currentState = ScanLineState.FLY;  
                 } else {
                     this.currentState = ScanLineState.FLY;
                 }   
                 break;
             case SCAN:
                 List<String> biomes = data.get("biomes").getArrayValue();
-                if(!biomes.contains("OCEAN")) {
+                if(final_scan) {
+                    this.currentState = ScanLineState.ECHO_NEIGHBOUR;
+                } else if(!biomes.contains("OCEAN")) {
                     logger.info("On Ground");
                     this.currentState = ScanLineState.FLY;
                 } else {
@@ -142,7 +147,9 @@ public class ScanLine implements Phase {
                 break;    
             case FLY:
                 this.groundRange -= 1;
-                if(this.groundRange > 1) {
+                if(final_scan) {
+                    this.currentState = ScanLineState.SCAN;
+                } else if(this.groundRange > 1) {
                     this.currentState = ScanLineState.FLY;
                 } else {
                     this.currentState = ScanLineState.SCAN;
