@@ -19,7 +19,8 @@ public class FindIsland implements Phase {
     private boolean reachedEnd = false;
     private FindIslandState currentState;
     private Drone drone;
-    private AllPOIS creekSpots;
+    private AllPOIS allPOIS;
+    private boolean isFinalPhase;
 
     public enum FindIslandState {
         ECHO_RIGHT,
@@ -27,12 +28,13 @@ public class FindIsland implements Phase {
         TURN_RIGHT;
     }
 
-    public FindIsland(Drone drone, AllPOIS creekSpots) {
+    public FindIsland(Drone drone, AllPOIS allPOIS) {
         logger.info("FindIsland phase begins.");
         this.reachedEnd = false;
+        this.isFinalPhase = false;
         this.currentState = FindIslandState.ECHO_RIGHT;
         this.drone = drone;
-        this.creekSpots = creekSpots;
+        this.allPOIS = allPOIS;
     }
 
     @Override
@@ -64,7 +66,11 @@ public class FindIsland implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
-        logger.info("Drone new battery: " + this.drone.getBattery());
+
+        if(drone.getBattery() <= 100) {
+            this.reachedEnd = true;
+            this.isFinalPhase = true;
+        }
 
         //Get the data from the response
         Map<String, Value> data = response.getData();
@@ -89,7 +95,7 @@ public class FindIsland implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new TravelToIsland(this.drone, this.creekSpots);
+        return new TravelToIsland(this.drone, this.allPOIS);
     }
 
     @Override
@@ -99,11 +105,11 @@ public class FindIsland implements Phase {
 
     @Override
     public boolean isFinal() {
-        return false;
+        return this.isFinalPhase;
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return allPOIS;
     }
 }

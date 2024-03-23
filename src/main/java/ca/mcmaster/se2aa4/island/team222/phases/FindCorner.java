@@ -19,8 +19,8 @@ public class FindCorner implements Phase {
     private boolean reachedEnd;
     private FindCornerState currentState;
     private Drone drone;
-    private AllPOIS creekSpots;
-
+    private AllPOIS allPOIS;
+    private boolean isFinalPhase;
 
     //State Variables
     private int range;
@@ -32,12 +32,13 @@ public class FindCorner implements Phase {
         TURNING_RIGHT
     }
 
-    public FindCorner(Drone drone, AllPOIS creekLocations) {
+    public FindCorner(Drone drone, AllPOIS allPOIS) {
         logger.info("FindCorner phase begins.");
         this.reachedEnd = false;
+        this.isFinalPhase = false;
         this.currentState = FindCornerState.CHECKING_LEFT;
         this.drone = drone;
-        this.creekSpots = creekLocations;
+        this.allPOIS = allPOIS;
     }
 
     @Override
@@ -75,6 +76,11 @@ public class FindCorner implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
+
+        if(drone.getBattery() <= 100) {
+            this.reachedEnd = true;
+            this.isFinalPhase = true;
+        }
      
         //Get the data from the response
         Map<String, Value> data = response.getData();
@@ -119,7 +125,7 @@ public class FindCorner implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new FindIsland(this.drone, this.creekSpots);
+        return new FindIsland(this.drone, this.allPOIS);
     }
 
     @Override
@@ -129,12 +135,12 @@ public class FindCorner implements Phase {
 
     @Override
     public boolean isFinal() {
-        return false;
+        return this.isFinalPhase;
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return this.allPOIS;
     }
 
 }

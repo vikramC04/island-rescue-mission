@@ -18,6 +18,7 @@ public class Interlaced implements Scan {
     private Phase currentPhase;
     private ActionType previousAction;
     private ClosestCreek creeks;
+    private POI emergencySite;
     
     public Interlaced(int batteryLevel, CardinalDirection direction) {
         this.currentPhase = new FindCorner(new Drone(batteryLevel, direction), new AllPOIS(new ArrayList<>()));
@@ -33,8 +34,18 @@ public class Interlaced implements Scan {
             //Terminate if the Drone reaches the end of the final phase
             if(currentPhase.isFinal()) {
                 logger.info("Final phase end.");
-                AllPOIS creekLocations = currentPhase.getCreeks();
-                creeks = new ClosestCreek(creekLocations);
+                AllPOIS allPOIS = currentPhase.getAllPOIS();
+                emergencySite = allPOIS.getEmergencySite();
+                creeks = new ClosestCreek(allPOIS);
+
+                logger.info("Number of creeks: " + allPOIS.getCreeks().size());
+                        for(int i = 0; i < allPOIS.getCreeks().size(); i++){
+                            logger.info(i + " " + allPOIS.getCreeks().get(i).getID());
+                            logger.info(i + " " + allPOIS.getCreeks().get(i).getX());
+                            logger.info(i + " " + allPOIS.getCreeks().get(i).getY());
+
+                        }
+
                 previousAction = ActionType.STOP; 
                 return new Action(ActionType.STOP);
             }
@@ -85,8 +96,13 @@ public class Interlaced implements Scan {
     public String generateReport(){
         POI closestCreek = creeks.findClosestCreek();
         logger.info("closest creek: " + closestCreek.getID());
-        return closestCreek.getID();
-
+        if(emergencySite.equals(null)){
+            return "Closest Creek: " + closestCreek.getID();
+        }
+        else{
+            logger.info("emergency site: " + emergencySite.getID());
+            return "Closest Creek: " + closestCreek.getID() + "Emergency Site: " + emergencySite.getID();
+        }
     }
 
 }

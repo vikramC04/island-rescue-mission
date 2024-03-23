@@ -21,9 +21,10 @@ public class ScanLine implements Phase {
     private boolean reachedEnd;
     private ScanLineState currentState;
     private Drone drone;
-    private AllPOIS creekSpots;
+    private AllPOIS allPOIS;
     private int groundRange;
     private boolean finalScan;
+    private boolean isFinalPhase;
 
     public enum ScanLineState {
         ECHO,
@@ -34,12 +35,13 @@ public class ScanLine implements Phase {
     }
 
 
-    public ScanLine(Drone drone, AllPOIS creeks) {
+    public ScanLine(Drone drone, AllPOIS allPOIS) {
         logger.info("ScanLine phase begins.");
         this.reachedEnd = false;
+        this.isFinalPhase = false;
         this.currentState = ScanLineState.ECHO;
         this.drone = drone;
-        this.creekSpots = creeks;
+        this.allPOIS = allPOIS;
         this.finalScan = false;
     }
 
@@ -85,6 +87,12 @@ public class ScanLine implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
+
+        if(drone.getBattery() <= 100) {
+            this.reachedEnd = true;
+            this.isFinalPhase = true;
+        }
+
         logger.info("Drone new battery: " + this.drone.getBattery());
         logger.info(drone.getCoordinates().getX());
         logger.info(drone.getCoordinates().getY());
@@ -120,19 +128,19 @@ public class ScanLine implements Phase {
                 List<String> sites = data.get("sites").getArrayValue();
                 if(!creeks.isEmpty()){
                     POI newCreek = new POI(drone.getCoordinates(), creeks.get(0), POIType.CREEK);
-                    creekSpots.addPoi(newCreek, POIType.CREEK);
+                    allPOIS.addPoi(newCreek, POIType.CREEK);
                 }
 
                 if(!sites.isEmpty()){
                     POI emergencySite = new POI(drone.getCoordinates(), sites.get(0), POIType.SITE);
-                    creekSpots.addPoi(emergencySite, POIType.SITE);
+                    allPOIS.addPoi(emergencySite, POIType.SITE);
                 }
 
-                logger.info(creekSpots.getCreeks());
-                for(int i = 0; i < creekSpots.getCreeks().size(); i++){
-                    logger.info(i + " " + creekSpots.getCreeks().get(i).getID());
-                    logger.info(i + " " + creekSpots.getCreeks().get(i).getX());
-                    logger.info(i + " " + creekSpots.getCreeks().get(i).getY());
+                logger.info(allPOIS.getCreeks());
+                for(int i = 0; i < allPOIS.getCreeks().size(); i++){
+                    logger.info(i + " " + allPOIS.getCreeks().get(i).getID());
+                    logger.info(i + " " + allPOIS.getCreeks().get(i).getX());
+                    logger.info(i + " " + allPOIS.getCreeks().get(i).getY());
 
                 }
                 break;
@@ -166,7 +174,7 @@ public class ScanLine implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new UTurn(this.drone, this.creekSpots,drone.getOrientation());
+        return new UTurn(this.drone, this.allPOIS,drone.getOrientation());
     }
 
     @Override
@@ -176,11 +184,11 @@ public class ScanLine implements Phase {
 
     @Override
     public boolean isFinal() {
-        return false;
+        return this.isFinalPhase;
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return this.allPOIS;
     }
 }

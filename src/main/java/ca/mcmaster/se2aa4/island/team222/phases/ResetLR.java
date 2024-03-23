@@ -17,17 +17,16 @@ public class ResetLR implements Phase {
 
     //Phase Variables
     private boolean reachedEnd;
-    private Reset currentState;
+    private State currentState;
     private Drone drone;
     private boolean needToScan;
-    private AllPOIS creekSpots;
+    private AllPOIS allPOIS;
     private Orientation droneOrientation;
+    private boolean isFinalPhase;
     private final String found = "found";
     private final String ground = "GROUND";
 
-
-
-    public enum Reset {
+    public enum State {
         ECHO_LEFT,
         FLY,
         LEFT,
@@ -47,23 +46,25 @@ public class ResetLR implements Phase {
     }
 
 
-    public ResetLR(Drone drone, AllPOIS creekSpots, Orientation droneOrientation) {
+    public ResetLR(Drone drone, AllPOIS allPOIS, Orientation droneOrientation) {
         logger.info("RESET RIGHT BEGINS");
         this.reachedEnd = false;
-        this.currentState = Reset.ECHO_LEFT;
+        this.isFinalPhase = false;
+        this.currentState = State.ECHO_LEFT;
         this.drone = drone;
         this.needToScan = false;
-        this.creekSpots = creekSpots;
+        this.allPOIS = allPOIS;
         this.droneOrientation = droneOrientation;
     }
 
     @Override
     public Action getNextDecision() {
+
         //Terminate if Drone Battery <= 100
         if(drone.getBattery() <= 100) {
             return new Action(ActionType.STOP);
         }
-
+       
         //Get the next action based on the current state and the drone
         Action nextAction;
         switch(this.currentState) {
@@ -161,6 +162,12 @@ public class ResetLR implements Phase {
         //Subtract Battery
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
+
+        if(drone.getBattery() <= 100) {
+            this.reachedEnd = true;
+            this.isFinalPhase = true;
+        }
+
         Map<String, Value> data = response.getData();
         logger.info(drone.getCoordinates().getX());
         logger.info(drone.getCoordinates().getY());
@@ -169,47 +176,47 @@ public class ResetLR implements Phase {
         switch(this.currentState) {
             case ECHO_LEFT:
                 String groundFound = data.get(found).getStringValue(); 
-                if(groundFound.equals("ground")) {
-                    this.currentState = Reset.FLY;
+                if(groundFound.equals(ground)) {
+                    this.currentState = State.FLY;
                 } else {
-                    this.currentState = Reset.LEFT;
+                    this.currentState = State.LEFT;
                 }  
                 break;
             case FLY:
-                this.currentState = Reset.ECHO_LEFT;
+                this.currentState = State.ECHO_LEFT;
                 break;
             case LEFT:
-                this.currentState = Reset.FORWARD;
+                this.currentState = State.FORWARD;
                 break;
             case FORWARD:
-                this.currentState = Reset.SECOND_FORWARD;
+                this.currentState = State.SECOND_FORWARD;
                 break;
             case SECOND_FORWARD:
-                this.currentState = Reset.THIRD_FORWARD;
+                this.currentState = State.THIRD_FORWARD;
                 break;
             case THIRD_FORWARD:
-                this.currentState = Reset.SECOND_LEFT;
+                this.currentState = State.SECOND_LEFT;
                 break;
             case SECOND_LEFT: 
-                this.currentState = Reset.FOURTH_FORWARD;        
+                this.currentState = State.FOURTH_FORWARD;        
                 break;
             case FOURTH_FORWARD:
-                this.currentState = Reset.THIRD_LEFT; 
+                this.currentState = State.THIRD_LEFT; 
                 break;
             case THIRD_LEFT:
-                this.currentState = Reset.FOURTH_LEFT;
+                this.currentState = State.FOURTH_LEFT;
                 break;
             case FOURTH_LEFT:
-                this.currentState = Reset.FIFTH_FORWARD;
+                this.currentState = State.FIFTH_FORWARD;
                 break;
             case FIFTH_FORWARD:
-                this.currentState = Reset.RIGHT;
+                this.currentState = State.RIGHT;
                 break;
             case RIGHT:
-                this.currentState = Reset.SECOND_RIGHT;
+                this.currentState = State.SECOND_RIGHT;
                 break;
             case SECOND_RIGHT:  
-                this.currentState = Reset.ECHO_FORWARD;
+                this.currentState = State.ECHO_FORWARD;
                 break;
             case ECHO_FORWARD:
                 String foundForward = data.get(found).getStringValue(); 
@@ -219,19 +226,19 @@ public class ResetLR implements Phase {
                     this.needToScan = true;
                 } else {
                     logger.info("No Need to Scan Line");
-                    this.currentState = Reset.FLY_SINGULAR;
+                    this.currentState = State.FLY_SINGULAR;
                 } 
                 break; 
             case ECHO_RIGHT:
                 String foundLeft = data.get(found).getStringValue(); 
                 if(foundLeft.equals(ground)) {
-                    this.currentState = Reset.FLY_SINGULAR;
+                    this.currentState = State.FLY_SINGULAR;
                 } else {
                     this.reachedEnd = true;
                 } 
                 break; 
             case FLY_SINGULAR:
-                this.currentState = Reset.ECHO_RIGHT;
+                this.currentState = State.ECHO_RIGHT;
                 break;
             default:
                 throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
@@ -245,9 +252,9 @@ public class ResetLR implements Phase {
     public Phase getNextPhase() {
         drone.setStatus();
         if(this.needToScan) {
-            return new ScanLine(this.drone, this.creekSpots);
+            return new ScanLine(this.drone, this.allPOIS);
         } 
-        return new UTurn(this.drone, this.creekSpots, drone.getOrientation());
+        return new UTurn(this.drone, this.allPOIS, drone.getOrientation());
     }
 
     @Override
@@ -257,11 +264,11 @@ public class ResetLR implements Phase {
 
     @Override
     public boolean isFinal() {
-        return false;
+        return this.isFinalPhase;
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return this.allPOIS;
     }
 }

@@ -10,5 +10,5 @@ public interface Phase {
     void react(Response response);
     boolean reachedEnd();
     boolean isFinal();
-    AllPOIS getCreeks();
+    AllPOIS getAllPOIS();
 }
