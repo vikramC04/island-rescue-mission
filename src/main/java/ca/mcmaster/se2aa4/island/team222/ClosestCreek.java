@@ -5,7 +5,7 @@ import java.util.List;
 public class ClosestCreek {
 
     private AllPOIS allPOIS;
-    private POI closestCreek;
+    private POI creekClosest;
 
     public ClosestCreek(AllPOIS allPOIS) {
        this.allPOIS = allPOIS;
@@ -20,7 +20,7 @@ public class ClosestCreek {
             double x = emergencySite.getX();
             double y = emergencySite.getY();
             double minDistance = Double.MAX_VALUE; 
-            closestCreek = null; 
+            creekClosest = null; 
         
             for (int i = 0; i < creeks.size(); i++) {
                 POI creek = creeks.get(i);
@@ -30,16 +30,16 @@ public class ClosestCreek {
                 double distance = Math.sqrt(Math.pow(x - creekX, 2) + Math.pow(y - creekY, 2));
                 if (distance < minDistance) {
                     minDistance = distance;
-                    closestCreek = creek;
+                    creekClosest = creek;
                 }
             }
 
         }
         else{
             // return the creek at the start of the scan
-            closestCreek = creeks.get(0);
+            creekClosest = creeks.get(0);
         }
         
-        return closestCreek;
+        return creekClosest;
     }
 }

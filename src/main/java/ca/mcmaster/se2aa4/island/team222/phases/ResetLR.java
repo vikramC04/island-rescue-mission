@@ -19,7 +19,7 @@ public class ResetLR implements Phase {
     private boolean reachedEnd;
     private Reset currentState;
     private Drone drone;
-    private boolean need_to_scan;
+    private boolean needToScan;
     private AllPOIS creekSpots;
     private Orientation droneOrientation;
     private final String found = "found";
@@ -52,7 +52,7 @@ public class ResetLR implements Phase {
         this.reachedEnd = false;
         this.currentState = Reset.ECHO_LEFT;
         this.drone = drone;
-        this.need_to_scan = false;
+        this.needToScan = false;
         this.creekSpots = creekSpots;
         this.droneOrientation = droneOrientation;
     }
@@ -212,19 +212,19 @@ public class ResetLR implements Phase {
                 this.currentState = Reset.ECHO_FORWARD;
                 break;
             case ECHO_FORWARD:
-                String found_forward = data.get(found).getStringValue(); 
-                if(found_forward.equals(ground)) {
+                String foundForward = data.get(found).getStringValue(); 
+                if(foundForward.equals(ground)) {
                     logger.info("GROUND IS AHEAD");
                     this.reachedEnd = true;
-                    this.need_to_scan = true;
+                    this.needToScan = true;
                 } else {
                     logger.info("No Need to Scan Line");
                     this.currentState = Reset.FLY_SINGULAR;
                 } 
                 break; 
             case ECHO_RIGHT:
-                String found_left = data.get(found).getStringValue(); 
-                if(found_left.equals(ground)) {
+                String foundLeft = data.get(found).getStringValue(); 
+                if(foundLeft.equals(ground)) {
                     this.currentState = Reset.FLY_SINGULAR;
                 } else {
                     this.reachedEnd = true;
@@ -244,7 +244,7 @@ public class ResetLR implements Phase {
     @Override
     public Phase getNextPhase() {
         drone.setStatus();
-        if(this.need_to_scan) {
+        if(this.needToScan) {
             return new ScanLine(this.drone, this.creekSpots);
         } 
         return new UTurn(this.drone, this.creekSpots, drone.getOrientation());

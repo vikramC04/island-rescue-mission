@@ -23,7 +23,7 @@ public class ScanLine implements Phase {
     private Drone drone;
     private AllPOIS creekSpots;
     private int groundRange;
-    private boolean final_scan;
+    private boolean finalScan;
 
     public enum ScanLineState {
         ECHO,
@@ -40,7 +40,7 @@ public class ScanLine implements Phase {
         this.currentState = ScanLineState.ECHO;
         this.drone = drone;
         this.creekSpots = creeks;
-        this.final_scan = false;
+        this.finalScan = false;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class ScanLine implements Phase {
                 String found = data.get("found").getStringValue();  
                 this.groundRange = data.get("range").getIntValue();                          
                 if(found.equals("OUT_OF_RANGE")) {
-                    final_scan = true;
+                    finalScan = true;
                     this.currentState = ScanLineState.FLY;  
                 } else {
                     this.currentState = ScanLineState.FLY;
@@ -107,7 +107,7 @@ public class ScanLine implements Phase {
                 break;
             case SCAN:
                 List<String> biomes = data.get("biomes").getArrayValue();
-                if(final_scan) {
+                if(finalScan) {
                     this.currentState = ScanLineState.ECHO_NEIGHBOUR;
                 } else if(!biomes.contains("OCEAN")) {
                     logger.info("On Ground");
@@ -118,12 +118,12 @@ public class ScanLine implements Phase {
             
                 List<String> creeks = data.get("creeks").getArrayValue();
                 List<String> sites = data.get("sites").getArrayValue();
-                if(creeks.size() > 0){
+                if(!creeks.isEmpty()){
                     POI newCreek = new POI(drone.getCoordinates(), creeks.get(0), POIType.CREEK);
                     creekSpots.addPoi(newCreek, POIType.CREEK);
                 }
 
-                if(sites.size() > 0){
+                if(!sites.isEmpty()){
                     POI emergencySite = new POI(drone.getCoordinates(), sites.get(0), POIType.SITE);
                     creekSpots.addPoi(emergencySite, POIType.SITE);
                 }
@@ -137,9 +137,9 @@ public class ScanLine implements Phase {
                 }
                 break;
             case ECHO_NEIGHBOUR:   
-                String found_land= data.get("found").getStringValue();
+                String foundLand= data.get("found").getStringValue();
                 int range = data.get("range").getIntValue();                                  
-                if(found_land.equals("OUT_OF_RANGE") || range > 4)  {
+                if(foundLand.equals("OUT_OF_RANGE") || range > 4)  {
                     this.reachedEnd = true;
                 } else {
                     this.currentState = ScanLineState.FLY_SINGULAR;
@@ -147,7 +147,7 @@ public class ScanLine implements Phase {
                 break;    
             case FLY:
                 this.groundRange -= 1;
-                if(final_scan) {
+                if(finalScan) {
                     this.currentState = ScanLineState.SCAN;
                 } else if(this.groundRange > 1) {
                     this.currentState = ScanLineState.FLY;
