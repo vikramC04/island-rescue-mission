@@ -8,7 +8,7 @@ import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
+import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 
 public class Explorer implements IExplorerRaid {
 

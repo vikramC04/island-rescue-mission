@@ -1,10 +1,10 @@
-package ca.mcmaster.se2aa4.island.team222.Actions;
+package ca.mcmaster.se2aa4.island.team222.actions;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
 
-import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
+import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 
 public class Action {
 

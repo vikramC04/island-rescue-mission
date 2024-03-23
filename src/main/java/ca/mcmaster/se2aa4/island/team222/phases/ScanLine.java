@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team222.Phases;
+package ca.mcmaster.se2aa4.island.team222.phases;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,9 @@ import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.POI;
 import ca.mcmaster.se2aa4.island.team222.POIType;
 import ca.mcmaster.se2aa4.island.team222.Value;
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.*;
-import ca.mcmaster.se2aa4.island.team222.Responses.Response;
+import ca.mcmaster.se2aa4.island.team222.actions.*;
+import ca.mcmaster.se2aa4.island.team222.directions.*;
+import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class ScanLine implements Phase {
 

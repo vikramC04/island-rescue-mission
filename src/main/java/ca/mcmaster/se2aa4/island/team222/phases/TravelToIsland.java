@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team222.Phases;
+package ca.mcmaster.se2aa4.island.team222.phases;
 
 import java.util.Map;
 
@@ -8,10 +8,10 @@ import org.apache.logging.log4j.Logger;
 import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
-import ca.mcmaster.se2aa4.island.team222.Directions.RelativeDirection;
-import ca.mcmaster.se2aa4.island.team222.Responses.Response;
+import ca.mcmaster.se2aa4.island.team222.actions.*;
+import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
+import ca.mcmaster.se2aa4.island.team222.directions.RelativeDirection;
+import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class TravelToIsland implements Phase {
     

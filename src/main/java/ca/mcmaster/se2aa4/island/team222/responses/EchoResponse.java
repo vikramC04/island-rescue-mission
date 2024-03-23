@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team222.Responses;
+package ca.mcmaster.se2aa4.island.team222.responses;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,20 +6,27 @@ import java.util.Map;
 import org.json.JSONObject;
 
 import ca.mcmaster.se2aa4.island.team222.Value;
-import ca.mcmaster.se2aa4.island.team222.Actions.ActionType;
+import ca.mcmaster.se2aa4.island.team222.actions.ActionType;
 
-public class NormalResponse implements Response {
+public class EchoResponse implements Response {
     
-    private ActionType responseType;
+    private ActionType responseType = ActionType.ECHO;
     private int cost;
     private String status;
     private Map<String, Value> data;
 
-    public NormalResponse(JSONObject response, ActionType previousAction) {
-        this.responseType = previousAction;
+    public EchoResponse(JSONObject response) {
         this.cost = response.getInt("cost");
         this.status = response.getString("status");
-        this.data = new HashMap<String, Value>();
+
+        JSONObject extraInfo = response.getJSONObject("extras");
+        String found = extraInfo.getString("found");
+        int range = extraInfo.getInt("range");
+
+        data = new HashMap<String, Value>();
+        data.put("found", new Value(found));
+        data.put("range", new Value(range));
+
     }
 
     @Override

@@ -6,10 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.CardinalDirection;
-import ca.mcmaster.se2aa4.island.team222.Phases.*;
-import ca.mcmaster.se2aa4.island.team222.Responses.*;
+import ca.mcmaster.se2aa4.island.team222.actions.*;
+import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
+import ca.mcmaster.se2aa4.island.team222.phases.*;
+import ca.mcmaster.se2aa4.island.team222.responses.*;
 
 public class Controller {
 

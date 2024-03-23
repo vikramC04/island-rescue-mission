@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team222.Phases;
+package ca.mcmaster.se2aa4.island.team222.phases;
 
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -8,12 +8,12 @@ import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.ScanStatus;
 import ca.mcmaster.se2aa4.island.team222.Value;
-import ca.mcmaster.se2aa4.island.team222.Actions.*;
-import ca.mcmaster.se2aa4.island.team222.Directions.*;
-import ca.mcmaster.se2aa4.island.team222.Phases.FindCorner.FindCornerState;
-import ca.mcmaster.se2aa4.island.team222.Phases.ScanLine.ScanLineState;
-import ca.mcmaster.se2aa4.island.team222.Phases.TravelToIsland.MoveToIsland;
-import ca.mcmaster.se2aa4.island.team222.Responses.Response;
+import ca.mcmaster.se2aa4.island.team222.actions.*;
+import ca.mcmaster.se2aa4.island.team222.directions.*;
+import ca.mcmaster.se2aa4.island.team222.phases.FindCorner.FindCornerState;
+import ca.mcmaster.se2aa4.island.team222.phases.ScanLine.ScanLineState;
+import ca.mcmaster.se2aa4.island.team222.phases.TravelToIsland.MoveToIsland;
+import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class ResetLR implements Phase {
 
