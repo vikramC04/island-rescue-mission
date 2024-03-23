@@ -11,7 +11,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.phases.*;
 import ca.mcmaster.se2aa4.island.team222.responses.*;
 
-public class Controller {
+public class Controller implements Scan {
 
     private final Logger logger = LogManager.getLogger();
     
@@ -23,6 +23,7 @@ public class Controller {
         this.currentPhase = new FindCorner(new Drone(batteryLevel, direction), new AllPOIS(new ArrayList<>()));
     }
 
+    @Override
     public Action decide() {
         
         //Check if the end of the phase has been reached
@@ -52,6 +53,7 @@ public class Controller {
         return nextAction;
     }
 
+    @Override
     public void react(JSONObject responseObj) {
         
         //Use previous action to generate the correct response
@@ -79,6 +81,7 @@ public class Controller {
         }
     }
 
+    @Override
     public String generateReport(){
         POI closestCreek = creeks.findClosestCreek();
         logger.info("closest creek: " + closestCreek.getID());
