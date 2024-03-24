@@ -4,11 +4,11 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class FindCorner implements Phase {

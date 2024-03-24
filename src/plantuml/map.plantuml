@@ -1,0 +1,69 @@
+@startuml Detailed Map Representation
+
+class Coordinate {
+- x : int
+- y : int
++ Coordinate(x : int, y : int)
++ getX() : int
++ getY() : int
++ updateX(x : int) : void
++ updateY(y : int) : void
++ updateXandY(x : int, y : int) : void
+}
+
+class AllPOIS{
+- creekLocations : List<POI>
+- emergencySite : POI
++ AllPOIS(creekLocations : List<POI>)
++ addPoi(poi : POI, type : POIType) : void
++ getEmergencySite() : POI
++ getCreeks() : List<POI>
+}
+
+class ClosestCreek{
+- allPOIS : AllPOIS
+- creekClosest : POI
++ ClosestCreek(allPOIS : AllPOIS)
++ findClosestCreek() : POI
+}
+
+class POI{
+- coordinate : Coordinate
+- id : String
+- type : POIType
++ POI(coordinate : Coordinate, id : String, type : POIType)
++ getX() : int
++ getY() : int
++ getID() : String
++ getPoiType() : POIType
+}
+
+class ScanLine{
+- reachedEnd : boolean
+- currentState : ScanLineState
+- drone : Drone
+- allPOIS : AllPOIS
+- groundRange : int
+- finalScan : boolean
++ ScanLine(drone : Drone, allPOIS : AllPOIS)
++ getNextDecision() : Action
++ react(response : Response) : void
++ getNextPhase() : Phase
++ reachedEnd() : boolean
++ isFinal() : boolean
++ getAllPOIS() : AllPOIS
+}
+
+enum POIType{
+CREEK
+SITE
+BIOME
+}
+
+AllPOIS *-- POI
+ClosestCreek o-- AllPOIS
+POI *-- Coordinate
+ScanLine *-- AllPOIS
+POI --> POIType
+
+@enduml

@@ -15,6 +15,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.directions.Orientation;
 import ca.mcmaster.se2aa4.island.team222.phases.Phase;
 import ca.mcmaster.se2aa4.island.team222.phases.ResetLR;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.responses.NormalResponse;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
 

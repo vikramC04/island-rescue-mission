@@ -76,57 +76,62 @@ public class DroneTest {
     }
 
     @Test
-    public void testHeading() {
+    public void testHeadingRight() {
         for (CardinalDirection cardDirection : CardinalDirection.values()) {
             RelativeDirection relDirection = RelativeDirection.RIGHT;
             Drone drone = new Drone(100, cardDirection);
             Action action = drone.heading(relDirection);
             assertEquals(ActionType.HEADING, action.getType());
             Coordinate correctCoordinate;
-            switch(relDirection) {
-                case LEFT:
-                    switch(cardDirection) {
-                        case N:
-                            correctCoordinate = new Coordinate(-1, 1);
-                            break;
-                        case E:
-                            correctCoordinate = new Coordinate(1,1);
-                            break;
-                        case S:
-                            correctCoordinate = new Coordinate(1, -1);
-                            break;
-                        case W:
-                            correctCoordinate = new Coordinate(-1, -1);
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + cardDirection);
-                    }
+            switch(cardDirection) {
+                case N:
+                    correctCoordinate = new Coordinate(1, 1);
                     break;
-                case RIGHT:
-                    switch(cardDirection) {
-                        case N:
-                            correctCoordinate = new Coordinate(1, 1);
-                            break;
-                        case E:
-                            correctCoordinate = new Coordinate(1,-1);
-                            break;
-                        case S:
-                            correctCoordinate = new Coordinate(-1, -1);
-                            break;
-                        case W:
-                            correctCoordinate = new Coordinate(-1, 1);
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + cardDirection);
-                    }
+                case E:
+                    correctCoordinate = new Coordinate(1,-1);
+                    break;
+                case S:
+                    correctCoordinate = new Coordinate(-1, -1);
+                    break;
+                case W:
+                    correctCoordinate = new Coordinate(-1, 1);
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected value: " + relDirection);
+                    throw new IllegalStateException("Unexpected value: " + cardDirection);
             }
             Coordinate droneCoordinates = drone.getCoordinates();
             assertEquals(correctCoordinate.getX(), droneCoordinates.getX());
             assertEquals(correctCoordinate.getY(), droneCoordinates.getY());
-            
+        }
+    }
+    
+    @Test
+    public void testHeadingLeft() {
+        for (CardinalDirection cardDirection : CardinalDirection.values()) {
+            RelativeDirection relDirection = RelativeDirection.LEFT;
+            Drone drone = new Drone(100, cardDirection);
+            Action action = drone.heading(relDirection);
+            assertEquals(ActionType.HEADING, action.getType());
+            Coordinate correctCoordinate;
+            switch(cardDirection) {
+                case N:
+                    correctCoordinate = new Coordinate(-1, 1);
+                    break;
+                case E:
+                    correctCoordinate = new Coordinate(1,1);
+                    break;
+                case S:
+                    correctCoordinate = new Coordinate(1, -1);
+                    break;
+                case W:
+                    correctCoordinate = new Coordinate(-1, -1);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + cardDirection);
+            }
+            Coordinate droneCoordinates = drone.getCoordinates();
+            assertEquals(correctCoordinate.getX(), droneCoordinates.getX());
+            assertEquals(correctCoordinate.getY(), droneCoordinates.getY()); 
         }
     }
 }

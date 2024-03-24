@@ -1,0 +1,450 @@
+@startuml
+skinparam classAttributeIconSize 0
+class Coordinate{
+- x : int
+- y : int
++ Coordinate(x : int, y : int)
++ getX() : int
++ getY() : int
++ updateX(x : int) : void
++ updateY(y : int) : void
++ updateXandY(x : int, y : int) : void
+}
+class FindIsland{
+- logger : Logger
+- reachedEnd : boolean
+- currentState : FindIslandState
+- drone : Drone
+- allPOIS : AllPOIS
++ FindIsland(drone : Drone, allPOIS : AllPOIS)
++ getNextDecision() : Action
++ react(response : Response) : void
++ getNextPhase() : Phase
++ reachedEnd() : boolean
++ isFinal() : boolean
++ getAllPOIS() : AllPOIS
+}
+FindIsland ..|> Phase
+class Value{
+- intValue : int
+- stringValue : String
+- stringListValue : List<String>
++ Value(intValue : int)
++ Value(stringValue : String)
++ Value(stringListValue : List<String>)
++ getIntValue() : int
++ getStringValue() : String
++ getArrayValue() : List<String>
+}
+class NormalResponseTest{
++ testConstructor() : void
++ testGetCost() : void
++ testGetType() : void
++ testGetStatus() : void
+}
+class UTurn{
+- logger : Logger
+- reachedEnd : boolean
+- currentState : UTurnLR
+- drone : Drone
+- isFinalPhase : boolean
+- reset : boolean
+- allPOIS : AllPOIS
+- orientation : Orientation
++ UTurn(drone : Drone, allPOIS : AllPOIS, orientation : Orientation)
++ getNextDecision() : Action
++ react(response : Response) : void
++ getNextPhase() : Phase
++ reachedEnd() : boolean
++ isFinal() : boolean
++ getAllPOIS() : AllPOIS
+}
+UTurn ..|> Phase
+class ScanResponse{
+- responseType : ActionType
+- cost : int
+- status : String
+- data : Map<String,Value>
+- biomes : List<String>
+- creeks : List<String>
+- sites : List<String>
++ ScanResponse(response : JSONObject)
++ getCost() : int
++ getStatus() : String
++ getType() : ActionType
++ getData() : Map<String,Value>
+}
+ScanResponse ..|> Response
+class NormalResponse{
+- responseType : ActionType
+- cost : int
+- status : String
+- data : Map<String,Value>
++ NormalResponse(response : JSONObject, previousAction : ActionType)
++ getCost() : int
++ getStatus() : String
++ getType() : ActionType
++ getData() : Map<String,Value>
+}
+NormalResponse ..|> Response
+class CardinalDirectionTest{
++ testNextRight() : void
++ testNextLeft() : void
+}
+class ClosestCreek{
+- allPOIS : AllPOIS
+- creekClosest : POI
++ ClosestCreek(allPOIS : AllPOIS)
++ findClosestCreek() : POI
+}
+class EchoResponse{
+- responseType : ActionType
+- cost : int
+- status : String
+- data : Map<String,Value>
++ EchoResponse(response : JSONObject)
++ getCost() : int
++ getStatus() : String
++ getType() : ActionType
++ getData() : Map<String,Value>
+}
+EchoResponse ..|> Response
+class Drone{
+- battery : int
+- direction : CardinalDirection
+- orientation : Orientation
+- status : ScanStatus
+- coordinates : Coordinate
++ Drone(battery : int, direction : CardinalDirection)
++ getBattery() : int
++ useBattery(cost : int) : void
++ getDirection() : CardinalDirection
++ getStatus() : ScanStatus
++ setStatus() : void
++ getOrientation() : Orientation
++ switchOrientation() : void
++ getCoordinates() : Coordinate
++ fly() : Action
++ echo(direction : RelativeDirection) : Action
++ heading(directionRelative : RelativeDirection) : Action
++ scan() : Action
++ stop() : Action
+}
+class Runner{
++ {static} main(args : String[]) : void
+}
+class CoordinateTest{
+- coordinate : Coordinate
++ setUp() : void
++ tearDown() : void
++ testGetX() : void
++ testGetY() : void
++ testUpdateX() : void
++ testUpdateY() : void
++ testUpdateXandY() : void
+}
+class AllPOIS{
+- creekLocations : List<POI>
+- emergencySite : POI
++ AllPOIS(creekLocations : List<POI>)
++ addPoi(poi : POI, type : POIType) : void
++ getEmergencySite() : POI
++ getCreeks() : List<POI>
+}
+class ActionTest{
++ testActionTypeConstructor() : void
++ testActionTypeWithDirectionConstructor() : void
++ testTranslateFlyAction() : void
++ testTranslateScanAction() : void
++ testTranslateStopAction() : void
++ testTranslateHeadingAction() : void
++ testTranslateEchoAction() : void
+}
+class ScanLine{
+- logger : Logger
+- reachedEnd : boolean
+- currentState : ScanLineState
+- drone : Drone
+- allPOIS : AllPOIS
+- groundRange : int
+- finalScan : boolean
++ ScanLine(drone : Drone, allPOIS : AllPOIS)
++ getNextDecision() : Action
++ react(response : Response) : void
++ getNextPhase() : Phase
++ reachedEnd() : boolean
++ isFinal() : boolean
++ getAllPOIS() : AllPOIS
+}
+ScanLine ..|> Phase
+class DroneTest{
++ testDroneInitialization() : void
++ testFly() : void
++ testEcho() : void
++ testHeadingRight() : void
++ testHeadingLeft() : void
+}
+class POITest{
+- coordinate : Coordinate
+- id : String
+- type : POIType
+- poi : POI
++ setUp() : void
++ tearDown() : void
++ testGetX() : void
++ testGetY() : void
++ testGetID() : void
++ testGetPoiType() : void
+}
+class POI{
+- coordinate : Coordinate
+- id : String
+- type : POIType
++ POI(coordinate : Coordinate, id : String, type : POIType)
++ getX() : int
++ getY() : int
++ getID() : String
++ getPoiType() : POIType
+}
+class Action{
+- actionType : ActionType
+- actionDirection : CardinalDirection
+- parameters : Map<String,String>
+- direction : String
+- action : String
++ Action(actionType : ActionType)
++ Action(actionType : ActionType, cardinalDirection : CardinalDirection)
++ translate() : JSONObject
++ getType() : ActionType
++ getDirection() : CardinalDirection
+}
+class EchoResponseTest{
++ testGetCost() : void
++ testGetStatus() : void
++ testGetType() : void
+}
+class Explorer{
+- logger : Logger
+- controller : Scan
++ initialize(s : String) : void
++ takeDecision() : String
++ acknowledgeResults(s : String) : void
++ deliverFinalReport() : String
+}
+Explorer ..|> IExplorerRaid
+class ResetLR{
+- logger : Logger
+- reachedEnd : boolean
+- currentState : State
+- drone : Drone
+- allPOIS : AllPOIS
+- droneOrientation : Orientation
++ ResetLR(drone : Drone, allPOIS : AllPOIS, droneOrientation : Orientation)
++ getNextDecision() : Action
++ react(response : Response) : void
++ getNextPhase() : Phase
++ reachedEnd() : boolean
++ isFinal() : boolean
++ getAllPOIS() : AllPOIS
+}
+ResetLR ..|> Phase
+class ResetLRTest{
+- drone : Drone
+- defaultResponse : Response
++ setUp() : void
++ tearDown() : void
++ testResetLeft() : void
++ testResetRight() : void
+- testAction(action : Action, dir : CardinalDirection, type : ActionType) : void
+- testAction(action : Action, type : ActionType) : void
+}
+class FindCorner{
+- logger : Logger
+- reachedEnd : boolean
+- currentState : FindCornerState
+- drone : Drone
+- allPOIS : AllPOIS
+- range : int
++ FindCorner(drone : Drone, allPOIS : AllPOIS)
++ getNextDecision() : Action
++ react(response : Response) : void
++ getNextPhase() : Phase
++ reachedEnd() : boolean
++ isFinal() : boolean
++ getAllPOIS() : AllPOIS
+}
+FindCorner ..|> Phase
+class Interlaced{
+- logger : Logger
+- currentPhase : Phase
+- previousAction : ActionType
+- creeks : ClosestCreek
+- emergencySite : POI
+- drone : Drone
++ Interlaced(batteryLevel : int, direction : CardinalDirection)
++ decide() : Action
++ react(responseObj : JSONObject) : void
++ generateReport() : String
+}
+Interlaced ..|> Scan
+class ScanResponseTest{
++ testGetCost() : void
++ testGetStatus() : void
++ testGetType() : void
++ testGetData() : void
+}
+class TravelToIsland{
+- logger : Logger
+- reachedEnd : boolean
+- currentState : MoveToIsland
+- drone : Drone
+- allPOIS : AllPOIS
+- groundRange : int
++ TravelToIsland(drone : Drone, allPOIS : AllPOIS)
++ getNextDecision() : Action
++ react(response : Response) : void
++ getNextPhase() : Phase
++ reachedEnd() : boolean
++ isFinal() : boolean
++ getAllPOIS() : AllPOIS
+}
+TravelToIsland ..|> Phase
+class ValueTest{
++ testConstructorWithIntValue() : void
++ testConstructorWithStringValue() : void
++ testConstructorWithStringListValue() : void
++ testGetters() : void
+}
+FindIsland--"- currentState" FindIslandState
+FindIsland--"- drone" Drone
+FindIsland--"- allPOIS" AllPOIS
+UTurn--"- currentState" UTurnLR
+UTurn--"- drone" Drone
+UTurn--"- allPOIS" AllPOIS
+UTurn--"- orientation" Orientation
+ScanResponse--"- responseType" ActionType
+NormalResponse--"- responseType" ActionType
+ClosestCreek--"- allPOIS" AllPOIS
+ClosestCreek--"- creekClosest" POI
+EchoResponse--"- responseType" ActionType
+Drone--"- direction" CardinalDirection
+Drone--"- orientation" Orientation
+Drone--"- status" ScanStatus
+Drone--"- coordinates" Coordinate
+CoordinateTest--"- coordinate" Coordinate
+AllPOIS--"- emergencySite" POI
+ScanLine--"- currentState" ScanLineState
+ScanLine--"- drone" Drone
+ScanLine--"- allPOIS" AllPOIS
+POITest--"- coordinate" Coordinate
+POITest--"- type" POIType
+POITest--"- poi" POI
+POI--"- coordinate" Coordinate
+POI--"- type" POIType
+Action--"- actionType" ActionType
+Action--"- actionDirection" CardinalDirection
+Explorer--"- controller" Scan
+ResetLR--"- currentState" State
+ResetLR--"- drone" Drone
+ResetLR--"- allPOIS" AllPOIS
+ResetLR--"- droneOrientation" Orientation
+ResetLRTest--"- drone" Drone
+ResetLRTest--"- defaultResponse" Response
+FindCorner--"- currentState" FindCornerState
+FindCorner--"- drone" Drone
+FindCorner--"- allPOIS" AllPOIS
+Interlaced--"- currentPhase" Phase
+Interlaced--"- previousAction" ActionType
+Interlaced--"- creeks" ClosestCreek
+Interlaced--"- emergencySite" POI
+Interlaced--"- drone" Drone
+TravelToIsland--"- currentState" MoveToIsland
+TravelToIsland--"- drone" Drone
+TravelToIsland--"- allPOIS" AllPOIS
+interface Scan{
+decide() : Action
+react(responseObj : JSONObject) : void
+generateReport() : String
+}
+interface Response{
+getCost() : int
+getStatus() : String
+getType() : ActionType
+getData() : Map<String,Value>
+}
+interface Phase{
+getNextDecision() : Action
+getNextPhase() : Phase
+react(response : Response) : void
+reachedEnd() : boolean
+isFinal() : boolean
+getAllPOIS() : AllPOIS
+}
+enum ActionType{
+FLY
+HEADING
+ECHO
+SCAN
+STOP
+}
+enum Orientation{
+RIGHT
+LEFT
+}
+enum State{
+TURN
+FORWARD
+SECOND_TURN
+THIRD_TURN
+FOURTH_TURN
+SECOND_FORWARD
+}
+enum UTurnLR{
+TURN
+SECOND_TURN
+ECHO
+}
+enum POIType{
+CREEK
+SITE
+BIOME
+}
+enum CardinalDirection{
+N
+E
+S
+W
+}
+enum FindCornerState{
+CHECKING_LEFT
+TURNING_LEFT
+FLYING_FORWARD
+TURNING_RIGHT
+}
+enum RelativeDirection{
+LEFT
+RIGHT
+FORWARD
+}
+enum MoveToIsland{
+TURN_TO_ISLAND
+ECHOING
+FLYING
+}
+enum FindIslandState{
+ECHO_RIGHT
+FLY_FORWARD
+TURN_RIGHT
+}
+enum ScanStatus{
+NONE
+HALF
+}
+enum ScanLineState{
+ECHO
+SCAN
+ECHO_NEIGHBOUR
+FLY
+FLY_SINGULAR
+}
+@enduml

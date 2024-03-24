@@ -1,45 +1,82 @@
-@startuml
+@startuml High Level Sequence Diagram
 
-title Drone Interaction
-
-participant DroneController
-participant Drone
-participant DroneMoveList
+actor GameEngine
 participant Explorer
+participant Controller
+participant Response
+participant Phase
+participant Drone
+participant Action
 
-Explorer -> DroneController: initialize(info)
-activate DroneController
-DroneController -> Drone: new Drone(direction, batteryLevel)
+GameEngine -> Explorer: initialize(s)
+activate Explorer
+Explorer -> Controller: Controller(battery, direction)
+activate Controller
+Controller -> Drone: Drone(battery, direction)
 activate Drone
-deactivate Drone
-deactivate DroneController
-
-loop until exploration ends
-    Explorer -> DroneController: takeDecision()
-    activate DroneController
-    DroneController -> Drone: decide()
-    activate Drone
-    Drone --> DroneController: JSONObject
+Drone -> Controller: drone
+Controller -> Phase: Phase(drone)
+activate Phase
+loop Until Drone Stops
+    GameEngine -> Explorer: takeDecision()
+    Explorer -> Controller: decide()
+    Controller -> Phase: reachedEnd()
+    alt Non-Final Phase
+        alt Not at the End of a Phase
+            Phase -> Controller: false
+        else End of a Phase
+            Phase -> Controller: true
+            Controller -> Phase: isFinal()
+            Phase -> Controller: false
+            Controller -> Phase: getNextPhase()
+            Phase -> Phase: NextPhase(drone)
+            Phase -> Controller: nextPhase
+        end
+        Controller -> Phase: getNextDecision()
+        Phase -> Drone: fly()\necho(direction)\nheading(direction)\nscan()
+        Drone -> Action: Action()
+        activate Action
+        Action -> Drone: actionObj
+        Drone -> Phase: actionObj
+        Phase -> Controller: actionObj
+        Controller -> Explorer: actionObj
+        Explorer -> Action: translate(actionObj)
+        Action -> Explorer: JSONAction
+        deactivate Action
+        Explorer -> GameEngine: JSONString
+    else End of a Final Phase (Drone Stops)
+        Phase -> Controller: true
+        Controller -> Phase: isFinal()
+        Phase -> Controller: true
+        Controller -> Action: Action(stop)
+        activate Action
+        Action -> Controller: stopAction
+        Controller -> Explorer: stopAction
+        Explorer -> Action: translate(stopAction)
+        Action -> Explorer: JSONAction
+        deactivate Action
+        Explorer -> GameEngine: JSONString
+    end
+    GameEngine -> Explorer: acknowledgeResults(s)
+    Explorer -> Controller: react(response)
+    Controller -> Response: Response(response)
+    activate Response
+    Response -> Controller: responseObj
+    Controller -> Phase: react(responseObj)
+    Phase -> Response: getCost()
+    Response -> Phase: cost
+    Phase -> Drone: useBattery(cost)
     deactivate Drone
-    deactivate DroneController
-
-    DroneController -> Drone: echoAll()
-    activate Drone
-    Drone --> DroneController: echo(direction)
-    deactivate Drone
-
-    Explorer -> DroneController: acknowledgeResults(response)
-    activate DroneController
-    DroneController -> Drone: react(response)
-    activate Drone
-    Drone --> DroneController: updateBatteryLevel()
-    Drone --> DroneController: getBattery()
-    Drone --> DroneController: addMove(move)
-    Drone --> DroneController: addMove(scan)
-    deactivate Drone
-    deactivate DroneController
+    Phase -> Response: getData()
+    Response -> Phase: data
+    deactivate Response
+    Phase -> Phase: Update State
 end
-
-Explorer -> Explorer: deliverFinalReport()
+deactivate Phase 
+GameEngine -> Explorer: deliverFinalReport()
+Explorer -> Controller: generateReport()
+Controller -> Explorer: report
+deactivate Controller
+Explorer -> GameEngine: report
 
 @enduml

@@ -13,7 +13,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
-    private Interlaced controller;
+    private Scan controller;
 
 
     @Override
