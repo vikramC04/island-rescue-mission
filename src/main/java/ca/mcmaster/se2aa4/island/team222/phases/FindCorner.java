@@ -16,11 +16,10 @@ public class FindCorner implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
-    private boolean reachedEnd;
-    private FindCornerState currentState;
+    private boolean reachedEnd = false;
+    private FindCornerState currentState = FindCornerState.CHECKING_LEFT;
     private Drone drone;
     private AllPOIS allPOIS;
-    private boolean isFinalPhase;
 
     //State Variables
     private int range;
@@ -34,16 +33,13 @@ public class FindCorner implements Phase {
 
     public FindCorner(Drone drone, AllPOIS allPOIS) {
         logger.info("FindCorner phase begins.");
-        this.reachedEnd = false;
-        this.isFinalPhase = false;
-        this.currentState = FindCornerState.CHECKING_LEFT;
         this.drone = drone;
         this.allPOIS = allPOIS;
     }
 
     @Override
     public Action getNextDecision() {
-        
+
         //Get the next action based on the current state and the drone
         Action nextAction;
         switch(this.currentState) {
@@ -125,7 +121,7 @@ public class FindCorner implements Phase {
 
     @Override
     public boolean isFinal() {
-        return this.isFinalPhase;
+        return false;
     }
 
     @Override

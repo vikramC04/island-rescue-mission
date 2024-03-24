@@ -18,13 +18,12 @@ public class ScanLine implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
-    private boolean reachedEnd;
-    private ScanLineState currentState;
+    private boolean reachedEnd = false;
+    private ScanLineState currentState = ScanLineState.ECHO;
     private Drone drone;
     private AllPOIS allPOIS;
     private int groundRange;
-    private boolean finalScan;
-    private boolean isFinalPhase;
+    private boolean finalScan = false;
 
     public enum ScanLineState {
         ECHO,
@@ -37,12 +36,8 @@ public class ScanLine implements Phase {
 
     public ScanLine(Drone drone, AllPOIS allPOIS) {
         logger.info("ScanLine phase begins.");
-        this.reachedEnd = false;
-        this.isFinalPhase = false;
-        this.currentState = ScanLineState.ECHO;
-        this.drone = drone;
         this.allPOIS = allPOIS;
-        this.finalScan = false;
+        this.drone = drone;
     }
 
     @Override
@@ -174,7 +169,7 @@ public class ScanLine implements Phase {
 
     @Override
     public boolean isFinal() {
-        return this.isFinalPhase;
+        return false;
     }
 
     @Override

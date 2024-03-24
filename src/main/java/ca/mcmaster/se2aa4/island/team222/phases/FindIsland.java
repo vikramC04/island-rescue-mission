@@ -20,7 +20,6 @@ public class FindIsland implements Phase {
     private FindIslandState currentState;
     private Drone drone;
     private AllPOIS allPOIS;
-    private boolean isFinalPhase;
 
     public enum FindIslandState {
         ECHO_RIGHT,
@@ -30,8 +29,6 @@ public class FindIsland implements Phase {
 
     public FindIsland(Drone drone, AllPOIS allPOIS) {
         logger.info("FindIsland phase begins.");
-        this.reachedEnd = false;
-        this.isFinalPhase = false;
         this.currentState = FindIslandState.ECHO_RIGHT;
         this.drone = drone;
         this.allPOIS = allPOIS;
@@ -96,7 +93,7 @@ public class FindIsland implements Phase {
 
     @Override
     public boolean isFinal() {
-        return this.isFinalPhase;
+        return false;
     }
 
     @Override

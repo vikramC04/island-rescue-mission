@@ -18,11 +18,11 @@ public class UTurn implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
-    private boolean reachedEnd;
-    private UTurnLR currentState;
+    private boolean reachedEnd = false;
+    private UTurnLR currentState = UTurnLR.TURN;
     private Drone drone;
-    private boolean isFinalPhase;
-    private boolean reset;
+    private boolean isFinalPhase = false;
+    private boolean reset = false;
     private AllPOIS allPOIS;
     private Orientation orientation;
 
@@ -34,11 +34,7 @@ public class UTurn implements Phase {
 
     public UTurn(Drone drone, AllPOIS allPOIS, Orientation orientation) {
         logger.info("Find corner phase begins.");
-        this.reachedEnd = false;
-        this.currentState = UTurnLR.TURN;
         this.drone = drone;
-        this.isFinalPhase = false;
-        this.reset = false;
         this.allPOIS = allPOIS;
         this.orientation = orientation;
     }

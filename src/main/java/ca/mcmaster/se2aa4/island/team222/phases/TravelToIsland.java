@@ -17,11 +17,10 @@ public class TravelToIsland implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     private boolean reachedEnd = false;
-    private MoveToIsland currentState;
+    private MoveToIsland currentState  = MoveToIsland.TURN_TO_ISLAND;
     private Drone drone;
     private AllPOIS allPOIS;
     private int groundRange;
-    private boolean isFinalPhase;
 
     public enum MoveToIsland {
         TURN_TO_ISLAND,
@@ -31,11 +30,8 @@ public class TravelToIsland implements Phase {
 
     public TravelToIsland(Drone drone, AllPOIS allPOIS) {
         logger.info("Move To Island phase begins.");
-        this.reachedEnd = false;
-        this.currentState = MoveToIsland.TURN_TO_ISLAND;
         this.drone = drone;
         this.allPOIS = allPOIS;
-        this.isFinalPhase = false;
     }
 
     @Override
@@ -110,7 +106,7 @@ public class TravelToIsland implements Phase {
 
     @Override
     public boolean isFinal() {
-        return this.isFinalPhase;
+        return false;
     }
 
     @Override

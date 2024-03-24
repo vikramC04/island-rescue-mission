@@ -16,43 +16,26 @@ public class ResetLR implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
-    private boolean reachedEnd;
-    private State currentState;
+    private boolean reachedEnd = false;
+    private State currentState = State.TURN;;
     private Drone drone;
-    private boolean needToScan;
     private AllPOIS allPOIS;
     private Orientation droneOrientation;
-    private boolean isFinalPhase;
-    private final String found = "found";
-    private final String ground = "GROUND";
 
     public enum State {
-        ECHO_LEFT,
-        FLY,
-        LEFT,
+        TURN,
         FORWARD,
-        SECOND_FORWARD,
-        THIRD_FORWARD,
-        SECOND_LEFT,
-        FOURTH_FORWARD,
-        THIRD_LEFT,
-        FOURTH_LEFT,
-        FIFTH_FORWARD,
-        RIGHT,
-        SECOND_RIGHT,
-        ECHO_FORWARD,
-        FLY_SINGULAR,
-        ECHO_RIGHT,
+        SECOND_TURN,
+        THIRD_TURN,
+        FOURTH_TURN,
+        SECOND_FORWARD
     }
 
 
     public ResetLR(Drone drone, AllPOIS allPOIS, Orientation droneOrientation) {
-        logger.info("RESET RIGHT BEGINS");
-        this.reachedEnd = false;
-        this.isFinalPhase = false;
-        this.currentState = State.ECHO_LEFT;
+        logger.info("Reset Orientation: " + drone.getOrientation());
+        logger.info("RESET BEGINS: " + drone.getBattery());
         this.drone = drone;
-        this.needToScan = false;
         this.allPOIS = allPOIS;
         this.droneOrientation = droneOrientation;
     }
@@ -63,84 +46,38 @@ public class ResetLR implements Phase {
         //Get the next action based on the current state and the drone
         Action nextAction;
         switch(this.currentState) {
-            case ECHO_LEFT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.echo(RelativeDirection.LEFT);
-                } else {
-                    nextAction = drone.echo(RelativeDirection.RIGHT);
-                }
-                break;
-            case FLY:
-                nextAction = drone.fly();
-                break;
-            case LEFT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.heading(RelativeDirection.LEFT);
-                } else {
+            case TURN:
+                if(droneOrientation == Orientation.LEFT) {
                     nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
                 }
                 break;
             case FORWARD:
                 nextAction = drone.fly();
                 break;
+            case SECOND_TURN:
+                if(droneOrientation == Orientation.LEFT) {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                }
+                break;
+            case THIRD_TURN:
+                if(droneOrientation == Orientation.LEFT) {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                }
+                break;
+            case FOURTH_TURN:
+                if(droneOrientation == Orientation.LEFT) {
+                    nextAction = drone.heading(RelativeDirection.RIGHT);
+                } else {
+                    nextAction = drone.heading(RelativeDirection.LEFT);
+                }
+                break;
             case SECOND_FORWARD:
-                nextAction = drone.fly();
-                break;
-            case THIRD_FORWARD:
-                nextAction = drone.fly();
-                break;
-            case SECOND_LEFT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.heading(RelativeDirection.LEFT);
-                } else {
-                    nextAction = drone.heading(RelativeDirection.RIGHT);
-                }
-                break;
-            case FOURTH_FORWARD:
-                nextAction = drone.fly();
-                break;
-            case THIRD_LEFT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.heading(RelativeDirection.LEFT);
-                } else {
-                    nextAction = drone.heading(RelativeDirection.RIGHT);
-                }
-                break;
-            case FOURTH_LEFT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.heading(RelativeDirection.LEFT);
-                } else {
-                    nextAction = drone.heading(RelativeDirection.RIGHT);
-                }
-                break; 
-            case FIFTH_FORWARD:
-                nextAction = drone.fly();
-                break;  
-            case RIGHT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.heading(RelativeDirection.RIGHT);
-                } else {
-                    nextAction = drone.heading(RelativeDirection.LEFT);
-                }
-                break;
-            case SECOND_RIGHT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.heading(RelativeDirection.RIGHT);
-                } else {
-                    nextAction = drone.heading(RelativeDirection.LEFT);
-                }
-                break; 
-            case ECHO_FORWARD:
-                nextAction = drone.echo(RelativeDirection.FORWARD);
-                break; 
-            case ECHO_RIGHT:
-                if(droneOrientation == Orientation.RIGHT) {
-                    nextAction = drone.echo(RelativeDirection.RIGHT);
-                } else {
-                    nextAction = drone.echo(RelativeDirection.LEFT);
-                }
-                break; 
-            case FLY_SINGULAR:
                 nextAction = drone.fly();
                 break;
             default:
@@ -164,71 +101,24 @@ public class ResetLR implements Phase {
 
         //Updates the current state using the response
         switch(this.currentState) {
-            case ECHO_LEFT:
-                String groundFound = data.get(found).getStringValue(); 
-                if(groundFound.equals(ground)) {
-                    this.currentState = State.FLY;
-                } else {
-                    this.currentState = State.LEFT;
-                }  
-                break;
-            case FLY:
-                this.currentState = State.ECHO_LEFT;
-                break;
-            case LEFT:
-                this.currentState = State.FORWARD;
+            case TURN:
+            this.currentState = State.FORWARD;
                 break;
             case FORWARD:
+                this.currentState = State.SECOND_TURN;
+                break;
+            case SECOND_TURN:
+                this.currentState = State.THIRD_TURN;
+                break;
+            case THIRD_TURN:
+                this.currentState = State.FOURTH_TURN;
+                break;
+            case FOURTH_TURN:
                 this.currentState = State.SECOND_FORWARD;
                 break;
             case SECOND_FORWARD:
-                this.currentState = State.THIRD_FORWARD;
-                break;
-            case THIRD_FORWARD:
-                this.currentState = State.SECOND_LEFT;
-                break;
-            case SECOND_LEFT: 
-                this.currentState = State.FOURTH_FORWARD;        
-                break;
-            case FOURTH_FORWARD:
-                this.currentState = State.THIRD_LEFT; 
-                break;
-            case THIRD_LEFT:
-                this.currentState = State.FOURTH_LEFT;
-                break;
-            case FOURTH_LEFT:
-                this.currentState = State.FIFTH_FORWARD;
-                break;
-            case FIFTH_FORWARD:
-                this.currentState = State.RIGHT;
-                break;
-            case RIGHT:
-                this.currentState = State.SECOND_RIGHT;
-                break;
-            case SECOND_RIGHT:  
-                this.currentState = State.ECHO_FORWARD;
-                break;
-            case ECHO_FORWARD:
-                String foundForward = data.get(found).getStringValue(); 
-                if(foundForward.equals(ground)) {
-                    logger.info("GROUND IS AHEAD");
-                    this.reachedEnd = true;
-                    this.needToScan = true;
-                } else {
-                    logger.info("No Need to Scan Line");
-                    this.currentState = State.FLY_SINGULAR;
-                } 
-                break; 
-            case ECHO_RIGHT:
-                String foundLeft = data.get(found).getStringValue(); 
-                if(foundLeft.equals(ground)) {
-                    this.currentState = State.FLY_SINGULAR;
-                } else {
-                    this.reachedEnd = true;
-                } 
-                break; 
-            case FLY_SINGULAR:
-                this.currentState = State.ECHO_RIGHT;
+                this.reachedEnd = true;
+                drone.switchOrientation();
                 break;
             default:
                 throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
@@ -241,10 +131,7 @@ public class ResetLR implements Phase {
     @Override
     public Phase getNextPhase() {
         drone.setStatus();
-        if(this.needToScan) {
-            return new ScanLine(this.drone, this.allPOIS);
-        } 
-        return new UTurn(this.drone, this.allPOIS, drone.getOrientation());
+        return new ScanLine(this.drone, this.allPOIS); 
     }
 
     @Override
@@ -254,7 +141,7 @@ public class ResetLR implements Phase {
 
     @Override
     public boolean isFinal() {
-        return this.isFinalPhase;
+        return false;
     }
 
     @Override
