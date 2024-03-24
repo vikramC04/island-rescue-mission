@@ -1,7 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
@@ -27,26 +27,31 @@ public class ActionTest {
     }
 
     @Test
-    public void testTranslateAction() {
-        // Test FLY action
+    public void testTranslateFlyAction() {
         Action flyAction = new Action(ActionType.FLY);
         JSONObject flyJson = flyAction.translate();
         assertNotNull(flyJson);
         assertEquals("fly", flyJson.getString("action"));
+    }
 
-        // Test SCAN action
+    @Test
+    public void testTranslateScanAction() {
         Action scanAction = new Action(ActionType.SCAN);
         JSONObject scanJson = scanAction.translate();
         assertNotNull(scanJson);
         assertEquals("scan", scanJson.getString("action"));
+    }
 
-        // Test STOP action
+    @Test
+    public void testTranslateStopAction() {
         Action stopAction = new Action(ActionType.STOP);
         JSONObject stopJson = stopAction.translate();
         assertNotNull(stopJson);
         assertEquals("stop", stopJson.getString("action"));
+    }
 
-        // Test HEADING action for each direction
+    @Test
+    public void testTranslateHeadingAction() {
         for (CardinalDirection direction : CardinalDirection.values()) {
             Action headingAction = new Action(ActionType.HEADING, direction);
             JSONObject headingJson = headingAction.translate();
@@ -56,8 +61,10 @@ public class ActionTest {
             assertNotNull(headingParams);
             assertEquals(direction.toString(), headingParams.getString("direction"));
         }
+    }
 
-        // Test ECHO action for each direction
+    @Test
+    public void testTranslateEchoAction() {
         for (CardinalDirection direction : CardinalDirection.values()) {
             Action echoAction = new Action(ActionType.ECHO, direction);
             JSONObject echoJson = echoAction.translate();
@@ -68,5 +75,4 @@ public class ActionTest {
             assertEquals(direction.toString(), echoParams.getString("direction"));
         }
     }
-
 }

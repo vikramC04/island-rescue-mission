@@ -29,14 +29,6 @@ public class POITest {
     }
 
     @Test
-    public void testPOIConstructionAndGetters() {
-        assertEquals(10, poi.getX());
-        assertEquals(2, poi.getY());
-        assertEquals("761a3ca6-be72-40d3-ae17-2ef01330f7df", poi.getID());
-        assertEquals(POIType.SITE, poi.getPoiType());
-    }
-
-    @Test
     public void testGetX() {
         assertEquals(10, poi.getX());
     }
