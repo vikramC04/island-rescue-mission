@@ -95,7 +95,6 @@ public class ResetLR implements Phase {
         this.drone.useBattery(response.getCost());
         logger.info("Drone new battery: " + this.drone.getBattery());
 
-        Map<String, Value> data = response.getData();
         logger.info(drone.getCoordinates().getX());
         logger.info(drone.getCoordinates().getY());
 
