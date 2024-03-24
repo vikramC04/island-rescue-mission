@@ -18,12 +18,12 @@ public class ScanLine implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
-    private boolean reachedEnd;
-    private ScanLineState currentState;
+    private boolean reachedEnd = false;
+    private ScanLineState currentState = ScanLineState.ECHO;
     private Drone drone;
-    private AllPOIS creekSpots;
+    private AllPOIS allPOIS;
     private int groundRange;
-    private boolean finalScan;
+    private boolean finalScan = false;
 
     public enum ScanLineState {
         ECHO,
@@ -34,22 +34,14 @@ public class ScanLine implements Phase {
     }
 
 
-    public ScanLine(Drone drone, AllPOIS creeks) {
+    public ScanLine(Drone drone, AllPOIS allPOIS) {
         logger.info("ScanLine phase begins.");
-        this.reachedEnd = false;
-        this.currentState = ScanLineState.ECHO;
+        this.allPOIS = allPOIS;
         this.drone = drone;
-        this.creekSpots = creeks;
-        this.finalScan = false;
     }
 
     @Override
     public Action getNextDecision() {
-
-        //Terminate if Drone Battery <= 100
-        if(drone.getBattery() <= 100) {
-            return new Action(ActionType.STOP);
-        }
 
         //Get the next action based on the current state and the drone
         Action nextAction;
@@ -85,6 +77,7 @@ public class ScanLine implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
+
         logger.info("Drone new battery: " + this.drone.getBattery());
         logger.info(drone.getCoordinates().getX());
         logger.info(drone.getCoordinates().getY());
@@ -120,26 +113,26 @@ public class ScanLine implements Phase {
                 List<String> sites = data.get("sites").getArrayValue();
                 if(!creeks.isEmpty()){
                     POI newCreek = new POI(drone.getCoordinates(), creeks.get(0), POIType.CREEK);
-                    creekSpots.addPoi(newCreek, POIType.CREEK);
+                    allPOIS.addPoi(newCreek, POIType.CREEK);
                 }
 
                 if(!sites.isEmpty()){
                     POI emergencySite = new POI(drone.getCoordinates(), sites.get(0), POIType.SITE);
-                    creekSpots.addPoi(emergencySite, POIType.SITE);
+                    allPOIS.addPoi(emergencySite, POIType.SITE);
                 }
 
-                logger.info(creekSpots.getCreeks());
-                for(int i = 0; i < creekSpots.getCreeks().size(); i++){
-                    logger.info(i + " " + creekSpots.getCreeks().get(i).getID());
-                    logger.info(i + " " + creekSpots.getCreeks().get(i).getX());
-                    logger.info(i + " " + creekSpots.getCreeks().get(i).getY());
+                logger.info(allPOIS.getCreeks());
+                for(int i = 0; i < allPOIS.getCreeks().size(); i++){
+                    logger.info(i + " " + allPOIS.getCreeks().get(i).getID());
+                    logger.info(i + " " + allPOIS.getCreeks().get(i).getX());
+                    logger.info(i + " " + allPOIS.getCreeks().get(i).getY());
 
                 }
                 break;
             case ECHO_NEIGHBOUR:   
                 String foundLand= data.get("found").getStringValue();
                 int range = data.get("range").getIntValue();                                  
-                if(foundLand.equals("OUT_OF_RANGE") || range > 4)  {
+                if(foundLand.equals("OUT_OF_RANGE") || range > 3)  {
                     this.reachedEnd = true;
                 } else {
                     this.currentState = ScanLineState.FLY_SINGULAR;
@@ -166,7 +159,7 @@ public class ScanLine implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new UTurn(this.drone, this.creekSpots,drone.getOrientation());
+        return new UTurn(this.drone, this.allPOIS,drone.getOrientation());
     }
 
     @Override
@@ -180,7 +173,7 @@ public class ScanLine implements Phase {
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return this.allPOIS;
     }
 }

@@ -16,11 +16,10 @@ public class FindCorner implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
-    private boolean reachedEnd;
-    private FindCornerState currentState;
+    private boolean reachedEnd = false;
+    private FindCornerState currentState = FindCornerState.CHECKING_LEFT;
     private Drone drone;
-    private AllPOIS creekSpots;
-
+    private AllPOIS allPOIS;
 
     //State Variables
     private int range;
@@ -32,21 +31,14 @@ public class FindCorner implements Phase {
         TURNING_RIGHT
     }
 
-    public FindCorner(Drone drone, AllPOIS creekLocations) {
+    public FindCorner(Drone drone, AllPOIS allPOIS) {
         logger.info("FindCorner phase begins.");
-        this.reachedEnd = false;
-        this.currentState = FindCornerState.CHECKING_LEFT;
         this.drone = drone;
-        this.creekSpots = creekLocations;
+        this.allPOIS = allPOIS;
     }
 
     @Override
     public Action getNextDecision() {
-
-        //Terminate if Drone Battery <= 100
-        if(drone.getBattery() <= 100) {
-            return new Action(ActionType.STOP);
-        }
 
         //Get the next action based on the current state and the drone
         Action nextAction;
@@ -119,7 +111,7 @@ public class FindCorner implements Phase {
 
     @Override
     public Phase getNextPhase() {
-        return new FindIsland(this.drone, this.creekSpots);
+        return new FindIsland(this.drone, this.allPOIS);
     }
 
     @Override
@@ -133,8 +125,8 @@ public class FindCorner implements Phase {
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return this.allPOIS;
     }
 
 }

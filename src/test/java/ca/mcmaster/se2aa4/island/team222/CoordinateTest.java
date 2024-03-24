@@ -3,18 +3,19 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class CoordinateTest {
     private Coordinate coordinate;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         coordinate = new Coordinate(3, 4);
     }
-
-    @AfterEach
+    @After
     public void tearDown() {
         coordinate = null;
     }

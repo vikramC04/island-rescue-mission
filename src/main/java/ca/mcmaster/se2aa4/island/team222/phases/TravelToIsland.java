@@ -17,9 +17,9 @@ public class TravelToIsland implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     private boolean reachedEnd = false;
-    private MoveToIsland currentState;
+    private MoveToIsland currentState  = MoveToIsland.TURN_TO_ISLAND;
     private Drone drone;
-    private AllPOIS creekSpots;
+    private AllPOIS allPOIS;
     private int groundRange;
 
     public enum MoveToIsland {
@@ -28,21 +28,14 @@ public class TravelToIsland implements Phase {
         FLYING
     }
 
-    public TravelToIsland(Drone drone, AllPOIS creekSpots) {
+    public TravelToIsland(Drone drone, AllPOIS allPOIS) {
         logger.info("Move To Island phase begins.");
-        this.reachedEnd = false;
-        this.currentState = MoveToIsland.TURN_TO_ISLAND;
         this.drone = drone;
-        this.creekSpots = creekSpots;
+        this.allPOIS = allPOIS;
     }
 
     @Override
     public Action getNextDecision() {
-
-        //Terminate if Drone Battery <= 100
-        if(drone.getBattery() <= 100) {
-            return new Action(ActionType.STOP);
-        }
 
         //Get the next action based on the current state and the drone
         Action nextAction;
@@ -69,8 +62,6 @@ public class TravelToIsland implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
-        logger.info("Drone new battery: " + this.drone.getBattery());
-
         //Get the data from the response
         Map<String, Value> data = response.getData();
 
@@ -105,7 +96,7 @@ public class TravelToIsland implements Phase {
     @Override
     public Phase getNextPhase() {
         logger.info("SCANNING LINE");
-        return new ScanLine(this.drone, this.creekSpots);
+        return new ScanLine(this.drone, this.allPOIS);
     }
 
     @Override
@@ -119,7 +110,7 @@ public class TravelToIsland implements Phase {
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return this.allPOIS;
     }
 }

@@ -18,12 +18,12 @@ public class UTurn implements Phase {
     private final Logger logger = LogManager.getLogger();
 
     //Phase Variables
-    private boolean reachedEnd;
-    private UTurnLR currentState;
+    private boolean reachedEnd = false;
+    private UTurnLR currentState = UTurnLR.TURN;
     private Drone drone;
-    private boolean isFinalPhase;
-    private boolean reset;
-    private AllPOIS creekSpots;
+    private boolean isFinalPhase = false;
+    private boolean reset = false;
+    private AllPOIS allPOIS;
     private Orientation orientation;
 
     public enum UTurnLR {
@@ -32,24 +32,15 @@ public class UTurn implements Phase {
         ECHO,
     }
 
-    public UTurn(Drone drone, AllPOIS creekSpots, Orientation orientation) {
+    public UTurn(Drone drone, AllPOIS allPOIS, Orientation orientation) {
         logger.info("Find corner phase begins.");
-        this.reachedEnd = false;
-        this.currentState = UTurnLR.TURN;
         this.drone = drone;
-        this.isFinalPhase = false;
-        this.reset = false;
-        this.creekSpots = creekSpots;
+        this.allPOIS = allPOIS;
         this.orientation = orientation;
     }
 
     @Override
     public Action getNextDecision() {
-
-        //Terminate if Drone Battery <= 100
-        if(drone.getBattery() <= 100) {
-            return new Action(ActionType.STOP);
-        }
 
         //Get the next action based on the current state and the drone
         Action nextAction;
@@ -84,6 +75,7 @@ public class UTurn implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
+
         logger.info("Drone new battery: " + this.drone.getBattery());
         logger.info(drone.getCoordinates().getX());
         logger.info(drone.getCoordinates().getY());
@@ -107,17 +99,17 @@ public class UTurn implements Phase {
                         this.reset = true;
                     } else {
                         this.isFinalPhase = true;
-                        logger.info("Emergency Site: " + creekSpots.getEmergencySite().getID());
-                        logger.info(creekSpots.getEmergencySite().getX());
-                        logger.info(creekSpots.getEmergencySite().getY());
-                        logger.info("Number of creeks: " + creekSpots.getCreeks().size());
-                        for(int i = 0; i < creekSpots.getCreeks().size(); i++){
-                            logger.info(i + " " + creekSpots.getCreeks().get(i).getID());
-                            logger.info(i + " " + creekSpots.getCreeks().get(i).getX());
-                            logger.info(i + " " + creekSpots.getCreeks().get(i).getY());
+                        logger.info("Emergency Site: " + allPOIS.getEmergencySite().getID());
+                        logger.info(allPOIS.getEmergencySite().getX());
+                        logger.info(allPOIS.getEmergencySite().getY());
+                        logger.info("Number of creeks: " + allPOIS.getCreeks().size());
+                        for(int i = 0; i < allPOIS.getCreeks().size(); i++){
+                            logger.info(i + " " + allPOIS.getCreeks().get(i).getID());
+                            logger.info(i + " " + allPOIS.getCreeks().get(i).getX());
+                            logger.info(i + " " + allPOIS.getCreeks().get(i).getY());
 
                         }
-                        ClosestCreek closestCreek = new ClosestCreek(creekSpots);
+                        ClosestCreek closestCreek = new ClosestCreek(allPOIS);
                         logger.info("Closest Creek: " + closestCreek.findClosestCreek().getID());
                         logger.info(closestCreek.findClosestCreek().getX());
                         logger.info(closestCreek.findClosestCreek().getY());
@@ -136,9 +128,9 @@ public class UTurn implements Phase {
     @Override
     public Phase getNextPhase() {
         if(reset) {
-            return new ResetLR(this.drone, this.creekSpots, drone.getOrientation());
+            return new ResetLR(this.drone, this.allPOIS, drone.getOrientation());
         } else {
-            return new ScanLine(this.drone, this.creekSpots);
+            return new ScanLine(this.drone, this.allPOIS);
         }
     }
 
@@ -153,7 +145,7 @@ public class UTurn implements Phase {
     }
 
     @Override
-    public AllPOIS getCreeks(){
-        return creekSpots;
+    public AllPOIS getAllPOIS(){
+        return this.allPOIS;
     }
 }

@@ -1,7 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
