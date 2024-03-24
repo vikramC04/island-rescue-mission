@@ -24,7 +24,6 @@ public class FindIsland implements Phase {
     public enum FindIslandState {
         ECHO_RIGHT,
         FLY_FORWARD,
-        TURN_RIGHT;
     }
 
     public FindIsland(Drone drone, AllPOIS allPOIS) {
