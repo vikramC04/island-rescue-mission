@@ -1,8 +1,6 @@
 package ca.mcmaster.se2aa4.island.team222;
 import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 
 import org.json.JSONObject;
@@ -53,22 +51,22 @@ public class ResetLRTest {
         while(!currentPhase.reachedEnd()) {
             Action nextAction = currentPhase.getNextDecision();
             if(currentState == State.TURN) {
-                testAction(nextAction, CardinalDirection.S, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.S, ActionType.HEADING);
                 currentState = State.FORWARD;
             } else if(currentState == State.FORWARD) {
-                testAction(nextAction, ActionType.FLY);
+                TestAction.testAction(nextAction, ActionType.FLY);
                 currentState = State.SECOND_TURN;
             } else if(currentState == State.SECOND_TURN) {
-                testAction(nextAction, CardinalDirection.W, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.W, ActionType.HEADING);
                 currentState = State.THIRD_TURN;
             } else if(currentState == State.THIRD_TURN) {
-                testAction(nextAction, CardinalDirection.N, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.N, ActionType.HEADING);
                 currentState = State.FOURTH_TURN;
             } else if(currentState == State.FOURTH_TURN) {
-                testAction(nextAction, CardinalDirection.E, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.E, ActionType.HEADING);
                 currentState = State.SECOND_FORWARD;
             } else if(currentState == State.SECOND_FORWARD) {
-                testAction(nextAction, ActionType.FLY);
+                TestAction.testAction(nextAction, ActionType.FLY);
             } 
 
             currentPhase.react(defaultResponse);
@@ -82,22 +80,22 @@ public class ResetLRTest {
         while(!currentPhase.reachedEnd()) {
             Action nextAction = currentPhase.getNextDecision();
             if(currentState == State.TURN) {
-                testAction(nextAction, CardinalDirection.N, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.N, ActionType.HEADING);
                 currentState = State.FORWARD;
             } else if(currentState == State.FORWARD) {
-                testAction(nextAction, ActionType.FLY);
+                TestAction.testAction(nextAction, ActionType.FLY);
                 currentState = State.SECOND_TURN;
             } else if(currentState == State.SECOND_TURN) {
-                testAction(nextAction, CardinalDirection.W, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.W, ActionType.HEADING);
                 currentState = State.THIRD_TURN;
             } else if(currentState == State.THIRD_TURN) {
-                testAction(nextAction, CardinalDirection.S, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.S, ActionType.HEADING);
                 currentState = State.FOURTH_TURN;
             } else if(currentState == State.FOURTH_TURN) {
-                testAction(nextAction, CardinalDirection.E, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.E, ActionType.HEADING);
                 currentState = State.SECOND_FORWARD;
             } else if(currentState == State.SECOND_FORWARD) {
-                testAction(nextAction, ActionType.FLY);
+                TestAction.testAction(nextAction, ActionType.FLY);
             } 
 
             currentPhase.react(defaultResponse);
@@ -105,12 +103,5 @@ public class ResetLRTest {
     }
 
     
-    private void testAction(Action action, CardinalDirection dir, ActionType type) {
-        assertEquals(dir, action.getDirection());
-        assertEquals(type, action.getType());
-    }
-
-    private void testAction(Action action, ActionType type) {
-        assertEquals(type, action.getType());
-    }
+    
 }
