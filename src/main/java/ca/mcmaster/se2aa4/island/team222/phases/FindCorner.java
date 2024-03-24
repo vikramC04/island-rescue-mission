@@ -43,12 +43,7 @@ public class FindCorner implements Phase {
 
     @Override
     public Action getNextDecision() {
-
-        //Terminate if Drone Battery <= 100
-        if(drone.getBattery() <= 100) {
-            return new Action(ActionType.STOP);
-        }
-
+        
         //Get the next action based on the current state and the drone
         Action nextAction;
         switch(this.currentState) {
@@ -76,11 +71,6 @@ public class FindCorner implements Phase {
 
         //Subtract Battery
         this.drone.useBattery(response.getCost());
-
-        if(drone.getBattery() <= 100) {
-            this.reachedEnd = true;
-            this.isFinalPhase = true;
-        }
      
         //Get the data from the response
         Map<String, Value> data = response.getData();
