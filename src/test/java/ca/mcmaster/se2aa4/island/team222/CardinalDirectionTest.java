@@ -1,7 +1,6 @@
 package ca.mcmaster.se2aa4.island.team222;
 
 import org.junit.jupiter.api.Test;
-
 import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 
 import static org.junit.jupiter.api.Assertions.*;
