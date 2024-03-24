@@ -1,8 +1,8 @@
 package ca.mcmaster.se2aa4.island.team222;
 
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ public class AllPOISTest {
     private AllPOIS allPOIS;
     private List<POI> creekLocations;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         creekLocations = new ArrayList<>();
         allPOIS = new AllPOIS(creekLocations);

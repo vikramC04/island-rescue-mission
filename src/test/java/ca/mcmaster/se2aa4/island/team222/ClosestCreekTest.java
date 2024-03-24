@@ -1,17 +1,18 @@
 package ca.mcmaster.se2aa4.island.team222;
 
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ClosestCreekTest {
 
     private ClosestCreek closestCreek;
     private AllPOIS allPOIS;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         List<POI> creekLocations = new ArrayList<>();
         creekLocations.add(new POI(new Coordinate(1, 2), "Creek1", POIType.CREEK));

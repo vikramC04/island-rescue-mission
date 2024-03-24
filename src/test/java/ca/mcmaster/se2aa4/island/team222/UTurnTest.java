@@ -1,10 +1,10 @@
 package ca.mcmaster.se2aa4.island.team222;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import org.json.JSONObject;
@@ -27,7 +27,7 @@ public class UTurnTest {
         ECHO
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         drone = new Drone(15000, CardinalDirection.W);
         JSONObject responseJson = new JSONObject();
@@ -75,7 +75,7 @@ public class UTurnTest {
         assertEquals(type, action.getType());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         drone = null;
     }
