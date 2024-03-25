@@ -98,22 +98,7 @@ public class UTurn implements Phase {
                     if(drone.getStatus() == ScanStatus.NONE) {
                         this.reset = true;
                     } else {
-                        this.isFinalPhase = true;
-                        logger.info("Emergency Site: " + allPOIS.getEmergencySite().getID());
-                        logger.info(allPOIS.getEmergencySite().getX());
-                        logger.info(allPOIS.getEmergencySite().getY());
-                        logger.info("Number of creeks: " + allPOIS.getCreeks().size());
-                        for(int i = 0; i < allPOIS.getCreeks().size(); i++){
-                            logger.info(i + " " + allPOIS.getCreeks().get(i).getID());
-                            logger.info(i + " " + allPOIS.getCreeks().get(i).getX());
-                            logger.info(i + " " + allPOIS.getCreeks().get(i).getY());
-
-                        }
-                        ClosestCreek closestCreek = new ClosestCreek(allPOIS);
-                        logger.info("Closest Creek: " + closestCreek.findClosestCreek().getID());
-                        logger.info(closestCreek.findClosestCreek().getX());
-                        logger.info(closestCreek.findClosestCreek().getY());
-                        
+                        this.isFinalPhase = true;             
                     } 
                 }
                 drone.switchOrientation();

@@ -1,6 +1,8 @@
 package ca.mcmaster.se2aa4.island.team222;
 import org.junit.jupiter.api.BeforeEach;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 
 import org.json.JSONObject;
@@ -101,7 +103,11 @@ public class ResetLRTest {
             currentPhase.react(defaultResponse);
         }
     }
-
-    
-    
+    @Test
+    public void finalPhaseTest() {
+        Phase currentPhase = new ResetLR(drone, new AllPOIS(new ArrayList<>()), Orientation.RIGHT);
+        Phase currentPhase2 = new ResetLR(drone, new AllPOIS(new ArrayList<>()), Orientation.LEFT);
+        assertEquals(false,currentPhase.isFinal());
+        assertEquals(false,currentPhase2.isFinal());
+    } 
 }

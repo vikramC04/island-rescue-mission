@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,5 +77,9 @@ public class ScanLineTest {
 
             currentPhase.react(anyResponse);
         }
+    }
+    @Test
+    public void finalPhaseTest() {
+        assertEquals(false,currentPhase.isFinal());
     }   
 }

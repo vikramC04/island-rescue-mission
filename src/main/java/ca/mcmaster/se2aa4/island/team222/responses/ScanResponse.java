@@ -18,24 +18,17 @@ public class ScanResponse implements Response{
     private int cost;
     private String status;
     private Map<String, Value> data;
-    private List<String> biomes;
-    private List<String> creeks;
-    private List<String> sites;
+    private List<String> biomes = new ArrayList<>();
+    private List<String> creeks = new ArrayList<>();
+    private List<String> sites = new ArrayList<>();
     
     public ScanResponse(JSONObject response) {
-
         this.cost = response.getInt("cost");
         this.status = response.getString("status");
         this.data = new HashMap<>();
-
-        this.biomes = new ArrayList<>();
-        this.creeks = new ArrayList<>();
-        this.sites = new ArrayList<>();
-
         addToArr(response, POIType.SITES, sites);
         addToArr(response, POIType.CREEKS, creeks);
         addToArr(response, POIType.BIOMES, biomes);
-
     }
 
     private void addToArr(JSONObject response, POIType poi, List<String> type){

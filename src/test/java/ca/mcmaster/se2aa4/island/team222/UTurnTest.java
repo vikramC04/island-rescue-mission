@@ -13,6 +13,8 @@ import ca.mcmaster.se2aa4.island.team222.actions.Action;
 import ca.mcmaster.se2aa4.island.team222.actions.ActionType;
 import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.directions.Orientation;
+import ca.mcmaster.se2aa4.island.team222.phases.Phase;
+import ca.mcmaster.se2aa4.island.team222.phases.ResetLR;
 import ca.mcmaster.se2aa4.island.team222.phases.UTurn;
 import ca.mcmaster.se2aa4.island.team222.responses.EchoResponse;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
@@ -53,27 +55,25 @@ public class UTurnTest {
             
             // Perform action based on current state
             if (currentState == UTurnLRState.TURN) {
-                testAction(nextAction, CardinalDirection.S, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.S, ActionType.HEADING);
                 currentState = UTurnLRState.SECOND_TURN;
             } else if (currentState == UTurnLRState.SECOND_TURN) {
-                testAction(nextAction, CardinalDirection.E, ActionType.HEADING);
+                TestAction.testAction(nextAction, CardinalDirection.E, ActionType.HEADING);
                 currentState = UTurnLRState.ECHO;
             } else if (currentState == UTurnLRState.ECHO) {
-                testAction(nextAction, ActionType.ECHO);
+                TestAction.testAction(nextAction, ActionType.ECHO);
             }
 
             currentPhase.react(defaultResponse);
         }
     }
+    public void finalPhaseTest() {
+        Phase currentPhase = new UTurn(drone, new AllPOIS(new ArrayList<>()), Orientation.RIGHT);
+        Phase currentPhase2 = new UTurn(drone, new AllPOIS(new ArrayList<>()), Orientation.LEFT);
+        assertEquals(false,currentPhase.isFinal());
+        assertEquals(false,currentPhase2.isFinal());
+    } 
 
-    private void testAction(Action action, CardinalDirection dir, ActionType type) {
-        assertEquals(dir, action.getDirection());
-        assertEquals(type, action.getType());
-    }
-
-    private void testAction(Action action, ActionType type) {
-        assertEquals(type, action.getType());
-    }
 
     @AfterEach
     public void tearDown() {

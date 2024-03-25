@@ -94,9 +94,8 @@ public class ScanLine implements Phase {
                 if(found.equals("OUT_OF_RANGE")) {
                     finalScan = true;
                     this.currentState = ScanLineState.FLY;  
-                } else {
-                    this.currentState = ScanLineState.FLY;
-                }   
+                } 
+                this.currentState = ScanLineState.FLY;   
                 break;
             case SCAN:
                 List<String> biomes = data.get("biomes").getArrayValue();
