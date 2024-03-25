@@ -2,9 +2,6 @@ package ca.mcmaster.se2aa4.island.team222;
 
 public class Coordinate {
 
-    // x is positive right
-    // y is positive up
-
     private int x;
     private int y;
 

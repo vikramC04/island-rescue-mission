@@ -35,5 +35,4 @@ public class POI {
     public POIType getPoiType(){
         return this.type;
     }
-    
 }

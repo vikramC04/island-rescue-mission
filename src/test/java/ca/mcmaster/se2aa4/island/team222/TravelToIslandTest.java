@@ -12,6 +12,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.phases.Phase;
 import ca.mcmaster.se2aa4.island.team222.phases.TravelToIsland;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 
 public class TravelToIslandTest {
     private Drone drone;

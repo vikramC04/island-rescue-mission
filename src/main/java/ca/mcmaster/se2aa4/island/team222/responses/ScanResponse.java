@@ -8,9 +8,9 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import ca.mcmaster.se2aa4.island.team222.POIType;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.ActionType;
+import ca.mcmaster.se2aa4.island.team222.pois.POIType;
 
 public class ScanResponse implements Response{
     

@@ -29,7 +29,7 @@ public class ResetLRTest {
         SECOND_TURN,
         THIRD_TURN,
         FOURTH_TURN,
-        SECOND_FORWARD
+        SECOND_FORWARD;
     }
 
     @BeforeEach

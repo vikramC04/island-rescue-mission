@@ -14,10 +14,10 @@ import ca.mcmaster.se2aa4.island.team222.actions.ActionType;
 import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.directions.Orientation;
 import ca.mcmaster.se2aa4.island.team222.phases.Phase;
-import ca.mcmaster.se2aa4.island.team222.phases.ResetLR;
 import ca.mcmaster.se2aa4.island.team222.phases.UTurn;
 import ca.mcmaster.se2aa4.island.team222.responses.EchoResponse;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 
 public class UTurnTest {
     private Drone drone;
@@ -26,7 +26,7 @@ public class UTurnTest {
     public enum UTurnLRState {
         TURN,
         SECOND_TURN,
-        ECHO
+        ECHO;
     }
 
     @BeforeEach
@@ -50,10 +50,7 @@ public class UTurnTest {
         UTurnLRState currentState = UTurnLRState.TURN;
         
         while (!currentPhase.reachedEnd()) {
-        
             Action nextAction = currentPhase.getNextDecision();
-            
-            // Perform action based on current state
             if (currentState == UTurnLRState.TURN) {
                 TestAction.testAction(nextAction, CardinalDirection.S, ActionType.HEADING);
                 currentState = UTurnLRState.SECOND_TURN;

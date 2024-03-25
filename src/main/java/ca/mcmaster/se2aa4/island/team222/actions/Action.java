@@ -14,21 +14,16 @@ public class Action {
     private final static String direction = "direction";
     private final static String action = "action";
 
-
-    //Actions with no Parameters
     public Action(ActionType actionType) {
         this.actionType = actionType;
     }
 
-    //Actions with direction Parameter
     public Action(ActionType actionType, CardinalDirection cardinalDirection) {
         this.actionType = actionType;
         this.actionDirection = cardinalDirection;
         this.parameters.put(direction, String.valueOf(cardinalDirection));
     }
 
-
-    //Translates action objects back to JSON
     public JSONObject translate() {
         JSONObject obj = new JSONObject();
         JSONObject parameters = new JSONObject();
@@ -62,7 +57,6 @@ public class Action {
                 throw new IllegalStateException(String.format("Undefined response type: %s", this.actionType));
 
         }
-
         return obj;
     }
 

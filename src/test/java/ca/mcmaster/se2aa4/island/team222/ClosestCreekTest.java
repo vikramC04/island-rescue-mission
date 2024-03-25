@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.mcmaster.se2aa4.island.team222.pois.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,18 +38,16 @@ public class ClosestCreekTest {
 
     @Test
     public void testFindClosestCreekWithoutEmergencySite() {
-        // Remove the emergency site
         allPOIS.addPoi(null, POIType.SITES);
         POI closest = closestCreek.findClosestCreek();
         assertNotNull(closest);
-        assertEquals("Creek1", closest.getID()); // Closest creek should be the first one
+        assertEquals("Creek1", closest.getID());
     }
 
     @Test
     public void testFindClosestCreekWithNoCreeks() {
-        // Remove all creeks
         allPOIS.getCreeks().clear();
         POI closest = closestCreek.findClosestCreek();
-        assertNull(closest); // Since there are no creeks, it should return null
+        assertNull(closest);
     }
 }

@@ -8,22 +8,18 @@ public class Value {
     private String stringValue;
     private List<String> stringListValue;
 
-    // Constructor for integer value
     public Value(int intValue) {
         this.intValue = intValue;
     }
 
-    // Constructor for string value
     public Value(String stringValue) {
         this.stringValue = stringValue;
     }
 
-    // Constructor for string list value
     public Value(List<String> stringListValue) {
         this.stringListValue = stringListValue;
     }
 
-    // Getter methods for accessing the values
     public int getIntValue() {
         return intValue;
     }

@@ -1,8 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222.phases;
+
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.Value;
@@ -15,9 +14,6 @@ import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class ScanLine implements Phase {
 
-    private final Logger logger = LogManager.getLogger();
-
-    //Phase Variables
     private boolean reachedEnd = false;
     private ScanLineState currentState = ScanLineState.ECHO;
     private Drone drone;
@@ -33,17 +29,13 @@ public class ScanLine implements Phase {
         FLY_SINGULAR,
     }
 
-
     public ScanLine(Drone drone, AllPOIS allPOIS) {
-        logger.info("ScanLine phase begins.");
         this.allPOIS = allPOIS;
         this.drone = drone;
     }
 
     @Override
     public Action getNextDecision() {
-
-        //Get the next action based on the current state and the drone
         Action nextAction;
         switch(this.currentState) {
             case ECHO:
@@ -67,26 +59,14 @@ public class ScanLine implements Phase {
                 break;
             default:
                 throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
-
         }
         return nextAction;
     }
 
     @Override
     public void react(Response response) {
-
-        //Subtract Battery
         this.drone.useBattery(response.getCost());
-
-        logger.info("Drone new battery: " + this.drone.getBattery());
-        logger.info(drone.getCoordinates().getX());
-        logger.info(drone.getCoordinates().getY());
-
-
-        //Get the data from the response
         Map<String, Value> data = response.getData();
-      
-        //Updates the current state using the response
         switch(this.currentState) {
             case ECHO:     
                 String found = data.get("found").getStringValue();  
@@ -102,30 +82,19 @@ public class ScanLine implements Phase {
                 if(finalScan) {
                     this.currentState = ScanLineState.ECHO_NEIGHBOUR;
                 } else if(!biomes.contains("OCEAN")) {
-                    logger.info("On Ground");
                     this.currentState = ScanLineState.FLY;
                 } else {
                     this.currentState = ScanLineState.ECHO;
                 }
-            
                 List<String> creeks = data.get("creeks").getArrayValue();
                 List<String> sites = data.get("sites").getArrayValue();
                 if(!creeks.isEmpty()){
                     POI newCreek = new POI(drone.getCoordinates(), creeks.get(0), POIType.CREEKS);
                     allPOIS.addPoi(newCreek, POIType.CREEKS);
                 }
-
                 if(!sites.isEmpty()){
                     POI emergencySite = new POI(drone.getCoordinates(), sites.get(0), POIType.SITES);
                     allPOIS.addPoi(emergencySite, POIType.SITES);
-                }
-
-                logger.info(allPOIS.getCreeks());
-                for(int i = 0; i < allPOIS.getCreeks().size(); i++){
-                    logger.info(i + " " + allPOIS.getCreeks().get(i).getID());
-                    logger.info(i + " " + allPOIS.getCreeks().get(i).getX());
-                    logger.info(i + " " + allPOIS.getCreeks().get(i).getY());
-
                 }
                 break;
             case ECHO_NEIGHBOUR:   

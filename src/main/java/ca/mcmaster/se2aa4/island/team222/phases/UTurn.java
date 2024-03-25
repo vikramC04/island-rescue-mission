@@ -1,8 +1,6 @@
 package ca.mcmaster.se2aa4.island.team222.phases;
 
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.ScanStatus;
@@ -10,14 +8,10 @@ import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
 import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
-import ca.mcmaster.se2aa4.island.team222.pois.ClosestCreek;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class UTurn implements Phase {
 
-    private final Logger logger = LogManager.getLogger();
-
-    //Phase Variables
     private boolean reachedEnd = false;
     private UTurnLR currentState = UTurnLR.TURN;
     private Drone drone;
@@ -33,7 +27,6 @@ public class UTurn implements Phase {
     }
 
     public UTurn(Drone drone, AllPOIS allPOIS, Orientation orientation) {
-        logger.info("Find corner phase begins.");
         this.drone = drone;
         this.allPOIS = allPOIS;
         this.orientation = orientation;
@@ -41,8 +34,6 @@ public class UTurn implements Phase {
 
     @Override
     public Action getNextDecision() {
-
-        //Get the next action based on the current state and the drone
         Action nextAction;
         switch(this.currentState) {
             case TURN:
@@ -64,27 +55,14 @@ public class UTurn implements Phase {
                 break;
             default:
                 throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
-
         }
-
         return nextAction;
     }
 
     @Override
     public void react(Response response) {
-
-        //Subtract Battery
         this.drone.useBattery(response.getCost());
-
-        logger.info("Drone new battery: " + this.drone.getBattery());
-        logger.info(drone.getCoordinates().getX());
-        logger.info(drone.getCoordinates().getY());
-
-
-        //Get the data from the response
         Map<String, Value> data = response.getData();
-
-        //Updates the current state using the response
         switch(this.currentState) {
             case TURN: 
                 this.currentState = UTurnLR.SECOND_TURN;        
@@ -107,7 +85,6 @@ public class UTurn implements Phase {
             default:
                 throw new IllegalStateException("Undefined state: " + this.currentState);
         }
-        logger.info("Next State: " + this.currentState);
     }
 
     @Override

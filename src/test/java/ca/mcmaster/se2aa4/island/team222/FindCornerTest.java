@@ -14,6 +14,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.phases.FindCorner;
 import ca.mcmaster.se2aa4.island.team222.phases.Phase;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 
 
 public class FindCornerTest {
@@ -24,7 +25,7 @@ public class FindCornerTest {
         CHECKING_LEFT,
         TURNING_LEFT,
         FLYING_FORWARD,
-        TURNING_RIGHT
+        TURNING_RIGHT;
     }
     @BeforeEach
     public void setUp() {

@@ -28,8 +28,4 @@ public class AllPOIS{
     public List<POI> getCreeks(){
         return this.creekLocations;
     }
-
-    
-
-
 } 
