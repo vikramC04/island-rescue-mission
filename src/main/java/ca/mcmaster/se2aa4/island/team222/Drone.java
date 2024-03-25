@@ -56,6 +56,7 @@ public class Drone {
     }
 
     public Action fly() {
+        
         switch(direction) {
             case N:
                 coordinates.updateY(1);
@@ -97,7 +98,6 @@ public class Drone {
 
     public Action heading(RelativeDirection directionRelative) {
         CardinalDirection headingDirection = this.direction;
-        // relative direction represents whether you want to turn left or right
         switch(directionRelative) {
             case LEFT:
         
@@ -132,13 +132,11 @@ public class Drone {
                 }
                 headingDirection = this.direction.nextRight();
                 break;
+
             default:
                 throw new IllegalStateException("Unexpected value: " + directionRelative);
         }
-
-        // update the new direction after turning
         this.direction = headingDirection;
-
         return new Action(ActionType.HEADING, headingDirection);
     }
 

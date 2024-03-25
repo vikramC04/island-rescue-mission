@@ -20,10 +20,7 @@ public class InterlacedTest {
 
     @Test
     public void testStopCondition() {
-     
         interlaced.decide();
-        
-        // Check if the next action is STOP
         Action nextAction = interlaced.decide();
         assertEquals(ActionType.STOP, nextAction.getType());
     }

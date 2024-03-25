@@ -1,19 +1,13 @@
 package ca.mcmaster.se2aa4.island.team222.phases;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import ca.mcmaster.se2aa4.island.team222.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.Drone;
 import ca.mcmaster.se2aa4.island.team222.actions.*;
 import ca.mcmaster.se2aa4.island.team222.directions.*;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
 
 public class ResetLR implements Phase {
 
-    private final Logger logger = LogManager.getLogger();
-
-    //Phase Variables
     private boolean reachedEnd = false;
     private State currentState = State.TURN;
     private Drone drone;
@@ -26,13 +20,10 @@ public class ResetLR implements Phase {
         SECOND_TURN,
         THIRD_TURN,
         FOURTH_TURN,
-        SECOND_FORWARD
+        SECOND_FORWARD;
     }
 
-
     public ResetLR(Drone drone, AllPOIS allPOIS, Orientation droneOrientation) {
-        logger.info("Reset Orientation: " + drone.getOrientation());
-        logger.info("RESET BEGINS: " + drone.getBattery());
         this.drone = drone;
         this.allPOIS = allPOIS;
         this.droneOrientation = droneOrientation;
@@ -40,8 +31,6 @@ public class ResetLR implements Phase {
 
     @Override
     public Action getNextDecision() {
-
-        //Get the next action based on the current state and the drone
         Action nextAction;
         switch(this.currentState) {
             case TURN:
@@ -80,23 +69,13 @@ public class ResetLR implements Phase {
                 break;
             default:
                 throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
-
         }
-
         return nextAction;
     }
 
     @Override
     public void react(Response response) {
-
-        //Subtract Battery
         this.drone.useBattery(response.getCost());
-        logger.info("Drone new battery: " + this.drone.getBattery());
-
-        logger.info(drone.getCoordinates().getX());
-        logger.info(drone.getCoordinates().getY());
-
-        //Updates the current state using the response
         switch(this.currentState) {
             case TURN:
             this.currentState = State.FORWARD;
@@ -119,10 +98,7 @@ public class ResetLR implements Phase {
                 break;
             default:
                 throw new IllegalStateException(String.format("Undefined state: %s", this.currentState));
-
-                
         }
-        logger.info("Next State: " + this.currentState);
     }
 
     @Override

@@ -26,7 +26,6 @@ public class EchoResponse implements Response {
         data = new HashMap<String, Value>();
         data.put("found", new Value(found));
         data.put("range", new Value(range));
-
     }
 
     @Override

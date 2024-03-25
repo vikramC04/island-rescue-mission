@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import ca.mcmaster.se2aa4.island.team222.actions.Action;
 import ca.mcmaster.se2aa4.island.team222.actions.ActionType;
 import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
-import ca.mcmaster.se2aa4.island.team222.phases.FindIsland;
 import ca.mcmaster.se2aa4.island.team222.phases.Phase;
 import ca.mcmaster.se2aa4.island.team222.phases.ScanLine;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 
 public class ScanLineTest {
     private Drone drone;
@@ -28,7 +28,7 @@ public class ScanLineTest {
         ECHO_NEIGHBOUR,
         ECHO_NEIGHBOUR_SECOND,
         FLY,
-        FLY_SINGULAR,
+        FLY_SINGULAR;
     }
     @BeforeEach
     public void setUp() {

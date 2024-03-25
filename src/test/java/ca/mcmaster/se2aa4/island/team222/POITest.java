@@ -3,6 +3,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import ca.mcmaster.se2aa4.island.team222.pois.POI;
+import ca.mcmaster.se2aa4.island.team222.pois.POIType;
+
 import static org.junit.Assert.assertEquals;
 
 public class POITest {

@@ -14,6 +14,7 @@ import ca.mcmaster.se2aa4.island.team222.directions.CardinalDirection;
 import ca.mcmaster.se2aa4.island.team222.phases.FindIsland;
 import ca.mcmaster.se2aa4.island.team222.phases.Phase;
 import ca.mcmaster.se2aa4.island.team222.responses.Response;
+import ca.mcmaster.se2aa4.island.team222.pois.AllPOIS;
 
 public class FindIslandTest {
     private Drone drone;
@@ -22,7 +23,7 @@ public class FindIslandTest {
     public enum State {
         ECHO_RIGHT,
         FLY_FORWARD,
-        ECHO_RIGHT_SECOND,
+        ECHO_RIGHT_SECOND;
     }
     @BeforeEach
     public void setUp() {

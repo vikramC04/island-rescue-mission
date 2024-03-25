@@ -1,4 +1,6 @@
-package ca.mcmaster.se2aa4.island.team222;
+package ca.mcmaster.se2aa4.island.team222.pois;
+
+import ca.mcmaster.se2aa4.island.team222.Coordinate;
 
 public class POI {
     
@@ -33,5 +35,4 @@ public class POI {
     public POIType getPoiType(){
         return this.type;
     }
-    
 }

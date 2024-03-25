@@ -3,6 +3,9 @@ package ca.mcmaster.se2aa4.island.team222;
 import static org.junit.Assert.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import ca.mcmaster.se2aa4.island.team222.pois.*;
+
 import java.util.List;
 import java.util.ArrayList;
 
