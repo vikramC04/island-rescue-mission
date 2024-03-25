@@ -15,14 +15,14 @@ public class ClosestCreekTest {
     @BeforeEach
     public void setUp() {
         List<POI> creekLocations = new ArrayList<>();
-        creekLocations.add(new POI(new Coordinate(1, 2), "Creek1", POIType.CREEK));
-        creekLocations.add(new POI(new Coordinate(3, 4), "Creek2", POIType.CREEK));
-        creekLocations.add(new POI(new Coordinate(5, 6), "Creek3", POIType.CREEK));
+        creekLocations.add(new POI(new Coordinate(1, 2), "Creek1", POIType.CREEKS));
+        creekLocations.add(new POI(new Coordinate(3, 4), "Creek2", POIType.CREEKS));
+        creekLocations.add(new POI(new Coordinate(5, 6), "Creek3", POIType.CREEKS));
 
-        POI emergencySite = new POI(new Coordinate(7, 8), "EmergencySite", POIType.SITE);
+        POI emergencySite = new POI(new Coordinate(7, 8), "EmergencySite", POIType.SITES);
 
         allPOIS = new AllPOIS(creekLocations);
-        allPOIS.addPoi(emergencySite, POIType.SITE);
+        allPOIS.addPoi(emergencySite, POIType.SITES);
 
         closestCreek = new ClosestCreek(allPOIS);
     }
@@ -37,7 +37,7 @@ public class ClosestCreekTest {
     @Test
     public void testFindClosestCreekWithoutEmergencySite() {
         // Remove the emergency site
-        allPOIS.addPoi(null, POIType.SITE);
+        allPOIS.addPoi(null, POIType.SITES);
         POI closest = closestCreek.findClosestCreek();
         assertNotNull(closest);
         assertEquals("Creek1", closest.getID()); // Closest creek should be the first one

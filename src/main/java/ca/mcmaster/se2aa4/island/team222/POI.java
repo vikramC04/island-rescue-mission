@@ -10,10 +10,10 @@ public class POI {
         this.coordinate = new Coordinate(coordinate.getX(), coordinate.getY());
         this.id = id;
 
-        if(type.equals(POIType.CREEK)){
+        if(type.equals(POIType.CREEKS)){
             this.type = type;
         }
-        else if(type.equals(POIType.SITE)){
+        else if(type.equals(POIType.SITES)){
             this.type = type;
         }
     }
