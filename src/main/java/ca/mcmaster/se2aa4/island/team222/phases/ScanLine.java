@@ -112,13 +112,13 @@ public class ScanLine implements Phase {
                 List<String> creeks = data.get("creeks").getArrayValue();
                 List<String> sites = data.get("sites").getArrayValue();
                 if(!creeks.isEmpty()){
-                    POI newCreek = new POI(drone.getCoordinates(), creeks.get(0), POIType.CREEK);
-                    allPOIS.addPoi(newCreek, POIType.CREEK);
+                    POI newCreek = new POI(drone.getCoordinates(), creeks.get(0), POIType.CREEKS);
+                    allPOIS.addPoi(newCreek, POIType.CREEKS);
                 }
 
                 if(!sites.isEmpty()){
-                    POI emergencySite = new POI(drone.getCoordinates(), sites.get(0), POIType.SITE);
-                    allPOIS.addPoi(emergencySite, POIType.SITE);
+                    POI emergencySite = new POI(drone.getCoordinates(), sites.get(0), POIType.SITES);
+                    allPOIS.addPoi(emergencySite, POIType.SITES);
                 }
 
                 logger.info(allPOIS.getCreeks());

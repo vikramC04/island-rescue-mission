@@ -15,7 +15,7 @@ public class ResetLR implements Phase {
 
     //Phase Variables
     private boolean reachedEnd = false;
-    private State currentState = State.TURN;;
+    private State currentState = State.TURN;
     private Drone drone;
     private AllPOIS allPOIS;
     private Orientation droneOrientation;

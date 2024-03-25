@@ -19,8 +19,8 @@ public class AllPOISTest {
 
     @Test
     public void testAddCreek() {
-        POI creek = new POI(new Coordinate(1, 2), "Creek1", POIType.CREEK);
-        allPOIS.addPoi(creek, POIType.CREEK);
+        POI creek = new POI(new Coordinate(1, 2), "Creek1", POIType.CREEKS);
+        allPOIS.addPoi(creek, POIType.CREEKS);
         
         List<POI> creeks = allPOIS.getCreeks();
         assertNotNull(creeks);
@@ -30,24 +30,24 @@ public class AllPOISTest {
 
     @Test
     public void testAddEmergencySite() {
-        POI emergencySite = new POI(new Coordinate(3, 4), "EmergencySite1", POIType.SITE);
-        allPOIS.addPoi(emergencySite, POIType.SITE);
+        POI emergencySite = new POI(new Coordinate(3, 4), "EmergencySite1", POIType.SITES);
+        allPOIS.addPoi(emergencySite, POIType.SITES);
         
         assertEquals(emergencySite, allPOIS.getEmergencySite());
     }
 
     @Test
     public void testGetEmergencySite() {
-        POI emergencySite = new POI(new Coordinate(5, 6), "EmergencySite2", POIType.SITE);
-        allPOIS.addPoi(emergencySite, POIType.SITE);
+        POI emergencySite = new POI(new Coordinate(5, 6), "EmergencySite2", POIType.SITES);
+        allPOIS.addPoi(emergencySite, POIType.SITES);
         
         assertEquals(emergencySite, allPOIS.getEmergencySite());
     }
 
     @Test
     public void testGetCreeks() {
-        POI creek1 = new POI(new Coordinate(7, 8), "Creek1", POIType.CREEK);
-        POI creek2 = new POI(new Coordinate(9, 10), "Creek2", POIType.CREEK);
+        POI creek1 = new POI(new Coordinate(7, 8), "Creek1", POIType.CREEKS);
+        POI creek2 = new POI(new Coordinate(9, 10), "Creek2", POIType.CREEKS);
         creekLocations.add(creek1);
         creekLocations.add(creek2);
         

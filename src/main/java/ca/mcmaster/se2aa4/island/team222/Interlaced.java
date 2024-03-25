@@ -94,7 +94,7 @@ public class Interlaced implements Scan {
     public String generateReport(){
         POI closestCreek = creeks.findClosestCreek();
         logger.info("closest creek: " + closestCreek.getID());
-        if(emergencySite.equals(null)){
+        if(emergencySite == null){
             return "Closest Creek: " + closestCreek.getID();
         }
         else{

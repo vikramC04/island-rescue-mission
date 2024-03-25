@@ -19,7 +19,7 @@ public class NormalResponse implements Response {
         this.responseType = previousAction;
         this.cost = response.getInt("cost");
         this.status = response.getString("status");
-        this.data = new HashMap<String, Value>();
+        this.data = new HashMap<>();
     }
 
     @Override
