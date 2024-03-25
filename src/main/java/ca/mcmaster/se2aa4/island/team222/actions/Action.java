@@ -11,8 +11,8 @@ public class Action {
     private ActionType actionType;
     private CardinalDirection actionDirection;
     private Map<String, String> parameters = new HashMap<>();
-    private final String direction = "direction";
-    private final String action = "action";
+    private final static String direction = "direction";
+    private final static String action = "action";
 
 
     //Actions with no Parameters

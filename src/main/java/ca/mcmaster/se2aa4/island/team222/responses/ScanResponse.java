@@ -8,6 +8,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import ca.mcmaster.se2aa4.island.team222.POIType;
 import ca.mcmaster.se2aa4.island.team222.Value;
 import ca.mcmaster.se2aa4.island.team222.actions.ActionType;
 
@@ -17,42 +18,29 @@ public class ScanResponse implements Response{
     private int cost;
     private String status;
     private Map<String, Value> data;
-    private List<String> biomes;
-    private List<String> creeks;
-    private List<String> sites;
+    private List<String> biomes = new ArrayList<>();
+    private List<String> creeks = new ArrayList<>();
+    private List<String> sites = new ArrayList<>();
     
     public ScanResponse(JSONObject response) {
         this.cost = response.getInt("cost");
         this.status = response.getString("status");
+        this.data = new HashMap<>();
+        addToArr(response, POIType.SITES, sites);
+        addToArr(response, POIType.CREEKS, creeks);
+        addToArr(response, POIType.BIOMES, biomes);
+    }
 
-        JSONObject extraInfo = response.getJSONObject("extras");
+    private void addToArr(JSONObject response, POIType poi, List<String> type){
         
-        //Parse biomes JSON Array
-        JSONArray biomesArr = extraInfo.getJSONArray("biomes");
-        biomes = new ArrayList<String>();
-        for(int i = 0; i < biomesArr.length(); i++) {
-            biomes.add(biomesArr.getString(i));
+        JSONObject extraInfo = response.getJSONObject("extras");
+        String poiType = String.valueOf(poi).toLowerCase();
+        JSONArray arr = extraInfo.getJSONArray(poiType);
+        for(int i = 0; i < arr.length(); i++) {
+            type.add(arr.getString(i));
         }
+        data.put(poiType, new Value(type));
 
-        //Parse creeks JSON Array
-        JSONArray creeksArr = extraInfo.getJSONArray("creeks");
-        creeks = new ArrayList<String>();
-        for(int i = 0; i < creeksArr.length(); i++) {
-            creeks.add(creeksArr.getString(i));
-        }
-
-        //Parse sites JSON Array
-        JSONArray sitesArr = extraInfo.getJSONArray("sites");
-        sites = new ArrayList<String>();
-        for(int i = 0; i < sitesArr.length(); i++) {
-            sites.add(sitesArr.getString(i));
-        }
-
-        //Load the data into an hash map
-        data = new HashMap<String, Value>();
-        data.put("biomes", new Value(biomes));
-        data.put("sites", new Value(sites));
-        data.put("creeks", new Value(creeks));
     }
 
     @Override

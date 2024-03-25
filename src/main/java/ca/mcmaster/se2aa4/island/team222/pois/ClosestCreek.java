@@ -5,7 +5,6 @@ import java.util.List;
 public class ClosestCreek {
 
     private AllPOIS allPOIS;
-    private POI creekClosest;
 
     public ClosestCreek(AllPOIS allPOIS) {
        this.allPOIS = allPOIS;
@@ -15,12 +14,12 @@ public class ClosestCreek {
 
         POI emergencySite = allPOIS.getEmergencySite();
         List<POI> creeks = allPOIS.getCreeks();
+        POI creekClosest = null;
 
         if (emergencySite != null) {
             double x = emergencySite.getX();
             double y = emergencySite.getY();
             double minDistance = Double.MAX_VALUE; 
-            creekClosest = null; 
         
             for (int i = 0; i < creeks.size(); i++) {
                 POI creek = creeks.get(i);

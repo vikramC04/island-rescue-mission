@@ -37,7 +37,7 @@ public class Interlaced implements Scan {
             logger.info("Current phase end.");
             //Get the next phase when the end is reached
             currentPhase = currentPhase.getNextPhase();
-        } else if(drone.getBattery() < 100 || (currentPhase.reachedEnd() && currentPhase.isFinal())) {
+        } else if(drone.getBattery() <= 100 || (currentPhase.reachedEnd() && currentPhase.isFinal())) {
             logger.info("Final phase end.");
             AllPOIS allPOIS = currentPhase.getAllPOIS();
             emergencySite = allPOIS.getEmergencySite();
@@ -97,12 +97,12 @@ public class Interlaced implements Scan {
     public String generateReport(){
         POI closestCreek = creeks.findClosestCreek();
         logger.info("closest creek: " + closestCreek.getID());
-        if(emergencySite.equals(null)){
+        if(emergencySite == null){
             return "Closest Creek: " + closestCreek.getID();
         }
         else{
             logger.info("emergency site: " + emergencySite.getID());
-            return "Closest Creek: " + closestCreek.getID() + "Emergency Site: " + emergencySite.getID();
+            return "Closest Creek: " + closestCreek.getID() + " Emergency Site: " + emergencySite.getID();
         }
     }
 

@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
@@ -75,6 +77,8 @@ public class FindCornerTest {
             currentPhase.react(anyResponse);
         }
     }
-
-    
+    @Test
+    public void finalPhaseTest() {
+        assertEquals(false,currentPhase.isFinal());
+    } 
 }

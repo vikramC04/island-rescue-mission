@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.island.team222;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
@@ -67,6 +69,10 @@ public class FindIslandTest {
 
             currentPhase.react(anyResponse);
         }
+    }
+    @Test
+    public void finalPhaseTest() {
+        assertEquals(false,currentPhase.isFinal());
     }
     
 }

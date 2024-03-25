@@ -19,7 +19,7 @@ public class POITest {
     public void setUp() {
         id = "761a3ca6-be72-40d3-ae17-2ef01330f7df";
         coordinate = new Coordinate(10, 2);
-        type = POIType.SITE;
+        type = POIType.SITES;
         poi = new POI(coordinate, id, type);
     }
 
@@ -47,7 +47,7 @@ public class POITest {
 
     @Test
     public void testGetPoiType() {
-        assertEquals(POIType.SITE, poi.getPoiType());
+        assertEquals(POIType.SITES, poi.getPoiType());
     }
 
 }

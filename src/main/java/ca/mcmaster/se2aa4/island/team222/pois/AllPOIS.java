@@ -5,7 +5,7 @@ import java.util.List;
 
 public class AllPOIS{
 
-    private List<POI> creekLocations = new ArrayList<POI>();
+    private List<POI> creekLocations = new ArrayList<>();
     private POI emergencySite;
 
     public AllPOIS(List<POI> creekLocations){
@@ -13,10 +13,10 @@ public class AllPOIS{
     }
 
     public void addPoi(POI poi, POIType type){
-        if(type.equals(POIType.CREEK)){
+        if(type.equals(POIType.CREEKS)){
             this.creekLocations.add(poi);
         }
-        else if(type.equals(POIType.SITE)){
+        else if(type.equals(POIType.SITES)){
             this.emergencySite = poi;
         }
        
