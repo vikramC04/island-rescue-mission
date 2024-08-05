@@ -1,5 +1,5 @@
 
-# [A2] Island Rescue Mission
+# Island Rescue Mission
 
 - Authors:
   - [Jake, Finlay]
