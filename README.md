@@ -1,16 +1,16 @@
 
-# [A2] Island ca.mcmaster.se2aa4.island.team00.Explorer
+# [A2] Island Rescue Mission
 
 - Authors:
-  - [Jake, Finlay](finlaj11@mcmaster.ca) 
-  - [Vikram, Chandar](chandarv@mcmaster.ca)
-  - [Arjun, Sasidaran](sasidara@mcmaster.ca)
+  - [Jake, Finlay]
+  - [Vikram, Chandar]
+  - [Arjun, Sasidaran]
 
 ## Product Description
 
 This product is an _exploration command center_ for the [Island](https://ace-design.github.io/island/) serious game. 
 
-- The `ca.mcmaster.se2aa4.island.team_XXX_.Explorer` class implements the command center, used to compete with the others. (XXX being the team identifier)
+- The `Explorer` class implements the command center, used to compete with the others. (XXX being the team identifier)
 - The `Runner` class allows one to run the command center on a specific map.
 
 ### Strategy description
@@ -30,7 +30,7 @@ mosser@azrael a2-template % mvn clean package
 [INFO] Total time:  0.960 s
 [INFO] Finished at: 2024-01-20T18:26:43-05:00
 [INFO] ------------------------------------------------------------------------
-mosser@azrael a2-template % 
+vikramchandar@Vikrams-MacBook-Air a2-template % 
 ```
 
 This creates one jar file in the `target` directory, named after the team identifier (i.e., team 00 uses `team00-1.0.jar`).
@@ -44,7 +44,7 @@ The project is not intended to be started by the user, but instead to be part of
 To do so, we ask maven to execute the `Runner` class, using a map provided as parameter:
 
 ```
-mosser@azrael a2-template % mvn exec:java -q -Dexec.args="./maps/map03.json"
+vikramchandar@Vikrams-MacBook-Air a2-template % mvn exec:java -q -Dexec.args="./maps/map03.json"
 ```
 
 It creates three files in the `outputs` directory:
@@ -52,9 +52,3 @@ It creates three files in the `outputs` directory:
 - `_pois.json`: the location of the points of interests
 - `Explorer_Island.json`: a transcript of the dialogue between the player and the game engine
 - `Explorer.svg`: the map explored by the player, with a fog of war for the tiles that were not visited.
-
-### Deploying the project to the arena
-
-Each week, you'll have to `tag` the version you want to submit for the competition. This version will be used in the weekly run. No tag means no competition.
-
-The tag syntax is `wX`, with `X` the week number. So your product for the first week will be tagged `w1`.
