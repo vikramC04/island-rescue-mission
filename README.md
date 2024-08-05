@@ -10,12 +10,12 @@
 
 This product is an _exploration command center_ for the [Island](https://ace-design.github.io/island/) serious game. 
 
-- The `Explorer` class implements the command center, used to compete with the others. (XXX being the team identifier)
+- The `Explorer` class implements the command center, used to compete with the others. 
 - The `Runner` class allows one to run the command center on a specific map.
 
 ### Strategy description
 
-The exploration strategy is for now to stop exploring as soon as we start. We stay safe and fly back to base immediately.
+The exploration strategy is for to do an interlaced scan once finding the island to reduce the number of turns necessary.
 
 ## How to compile, run and deploy
 
