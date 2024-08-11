@@ -30,7 +30,7 @@ mosser@azrael a2-template % mvn clean package
 [INFO] Total time:  0.960 s
 [INFO] Finished at: 2024-01-20T18:26:43-05:00
 [INFO] ------------------------------------------------------------------------
-vikramchandar@Vikrams-MacBook-Air a2-template % 
+chandar@Vikrams-MacBook-Air a2-template % 
 ```
 
 This creates one jar file in the `target` directory, named after the team identifier.
@@ -44,7 +44,7 @@ The project is not intended to be started by the user, but instead to be part of
 To do so, we ask maven to execute the `Runner` class, using a map provided as parameter:
 
 ```
-vikramchandar@Vikrams-MacBook-Air a2-template % mvn exec:java -q -Dexec.args="./maps/map03.json"
+chandar@Vikrams-MacBook-Air a2-template % mvn exec:java -q -Dexec.args="./maps/map03.json"
 ```
 
 It creates three files in the `outputs` directory:
