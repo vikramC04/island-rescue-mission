@@ -33,7 +33,7 @@ mosser@azrael a2-template % mvn clean package
 vikramchandar@Vikrams-MacBook-Air a2-template % 
 ```
 
-This creates one jar file in the `target` directory, named after the team identifier (i.e., team 00 uses `team00-1.0.jar`).
+This creates one jar file in the `target` directory, named after the team identifier.
 
 As the project is intended to run in the competition arena, this jar is not executable. 
 
