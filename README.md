@@ -52,3 +52,10 @@ It creates three files in the `outputs` directory:
 - `_pois.json`: the location of the points of interests
 - `Explorer_Island.json`: a transcript of the dialogue between the player and the game engine
 - `Explorer.svg`: the map explored by the player, with a fog of war for the tiles that were not visited.
+
+## Live Demo
+
+https://github.com/user-attachments/assets/6646d8ee-65a1-4381-8929-93287b68bd14
+
+
+
